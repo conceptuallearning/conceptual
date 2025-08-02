@@ -1,0 +1,77 @@
+<!-- Inside body: Remove timer paragraph or keep but hidden -->
+<p id="timer" class="hidden"></p> <!-- optional, or just remove -->
+
+<script>
+/* ---------- CONFIG ---------- */
+const QUESTIONS_PER_SESSION = 20;
+
+/* ---------- GLOBALS ---------- */
+let bank = [], quiz = [], idx = 0, score = 0;
+const qEl = document.getElementById("question"),
+      oEl = document.getElementById("options"),
+      wEl = document.getElementById("why"),
+      rEl = document.getElementById("result"),
+      btn = document.getElementById("restart");
+
+/* ---------- INIT ---------- */
+fetch('quiz.csv')
+  .then(r => r.text())
+  .then(csv => {
+      bank = Papa.parse(csv, {header:true}).data
+          .filter(row => row.Question && row.Correct);
+      startNewSession();
+  })
+  .catch(err => alert("Cannot load quiz.csv - check filename & sharing settings"));
+
+function startNewSession(){
+    quiz = shuffle(bank).slice(0, QUESTIONS_PER_SESSION);
+    idx = score = 0;
+    qEl.classList.remove("hidden");
+    oEl.classList.remove("hidden");
+    rEl.classList.add("hidden");
+    btn.classList.add("hidden");
+    load();
+}
+
+function load(){
+    if(idx === quiz.length){finish();return;}
+    const cur = quiz[idx];
+    qEl.textContent = `${idx+1}/${quiz.length}. ${cur.Question}`;
+    oEl.innerHTML = "";
+    ['Option A','Option B','Option C','Option D'].forEach((key,i)=>{
+        const div = document.createElement("div");
+        div.className = "option";
+        div.textContent = cur[key];
+        div.onclick = () => check(i, cur);
+        oEl.appendChild(div);
+    });
+    wEl.classList.add("hidden");
+    // timer removed - no startTimer() call here
+}
+
+function check(selected, cur){
+    const right = 'ABCD'.indexOf(cur.Correct.trim().toUpperCase());
+    if(selected === right) score++;
+    if(cur.Reasoning && cur.Reasoning.trim() !== ""){
+        wEl.textContent = cur.Reasoning;
+        wEl.classList.remove("hidden");
+        setTimeout(() => { idx++; load(); }, 3200);
+    } else {
+        idx++;
+        load();
+    }
+}
+
+function finish(){
+    qEl.classList.add("hidden");
+    oEl.classList.add("hidden");
+    wEl.classList.add("hidden");
+    rEl.textContent = `Finished! You scored ${score}/${quiz.length}.`;
+    rEl.classList.remove("hidden");
+    btn.classList.remove("hidden");
+}
+
+btn.onclick = startNewSession;
+
+function shuffle(arr){
+    return arr.map(v => [Math.random(), v]).sort((a,b) => a[0] - b[0]).map(v =>
