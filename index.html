@@ -1,11 +1,10 @@
-<!-- Inside body: Remove timer paragraph or keep but hidden -->
-<p id="timer" class="hidden"></p> <!-- optional, or just remove -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
-/* ---------- CONFIG ---------- */
+// ---------- CONFIG ----------
 const QUESTIONS_PER_SESSION = 20;
 
-/* ---------- GLOBALS ---------- */
+// ---------- GLOBALS ----------
 let bank = [], quiz = [], idx = 0, score = 0;
 const qEl = document.getElementById("question"),
       oEl = document.getElementById("options"),
@@ -13,7 +12,7 @@ const qEl = document.getElementById("question"),
       rEl = document.getElementById("result"),
       btn = document.getElementById("restart");
 
-/* ---------- INIT ---------- */
+// ---------- INIT ----------
 fetch('quiz.csv')
   .then(r => r.text())
   .then(csv => {
@@ -46,7 +45,6 @@ function load(){
         oEl.appendChild(div);
     });
     wEl.classList.add("hidden");
-    // timer removed - no startTimer() call here
 }
 
 function check(selected, cur){
@@ -74,4 +72,8 @@ function finish(){
 btn.onclick = startNewSession;
 
 function shuffle(arr){
-    return arr.map(v => [Math.random(), v]).sort((a,b) => a[0] - b[0]).map(v =>
+    return arr.map(v => [Math.random(), v])
+              .sort((a,b) => a[0] - b[0])
+              .map(v => v[1]);
+}
+</script>
