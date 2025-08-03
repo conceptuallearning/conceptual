@@ -2,109 +2,222 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your Quiz Title</title>
-  <!-- PapaParse for CSV reading -->
+  <title>Conceptual Learning Quiz</title>
+  <!-- Add the Papaparse Library for CSV reading -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
-    /* You can style these elements as you like */
-    body { font-family: Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-    #card { background: white; border-radius: 13px; box-shadow: 0 2px 7px #0002; padding: 28px; max-width: 460px; width: 98%; }
-    #question { font-size: 1.2em; margin: 0 0 18px; }
-    .option { background: #f0f4fa; margin: 10px 0; padding: 12px; border-radius: 7px; border: 1.5px solid #2776ff; cursor: pointer; transition: .18s; }
-    .option:hover { background: #2776ff; color: #fff; }
-    #why { font-size: .97em; background: #c8f2ff; border-radius: 6px; padding: 8px; margin: 11px 0; display: none; }
-    #result { margin: 20px 0 0; font-weight: bold; display: none; }
-    #restart { margin-top: 20px; padding: 10px 22px; border: none; border-radius: 7px; background: #2776ff; color: #fff; font-size: 1em; cursor: pointer; display:none; }
+    /* Futuristic Backdrop */
+    body {
+      margin:0; min-height:100vh;
+      background: linear-gradient(135deg, #070e22 65%, #1afdff 100%);
+      background-size: 150% 150%;
+      animation: bgmove 8s ease-in-out alternate infinite;
+      display: flex;justify-content: center;align-items: center;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color:#eafaff;
+    }
+    @keyframes bgmove {
+      0% {background-position: 0 0;}
+      100% {background-position: 100% 100%;}
+    }
+    #card {
+      background: rgba(21,52,85, 0.48);
+      border-radius: 20px;
+      box-shadow: 0 6px 30px #0ff4f840, 0 1.5px 3px #10ffdb44;
+      backdrop-filter: blur(18px);
+      max-width: 560px; width: 97%;
+      padding:34px 16px 30px 16px;
+      margin: 38px 0; text-align:center;
+      border: 1.6px solid #12fff9bb;
+    }
+    h1,h2,h3 {
+      letter-spacing:.75px;
+      margin:.6em 0 .3em 0;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+    h1 {
+      font-size:2.05em; background: linear-gradient(90deg,#08fff1, #73d9fd 73%,#ffffff33); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 8px #00ffd444,0 0px 36px #0ff5;
+      margin-top:0;
+    }
+    #topic {
+      font-size:1.2em; margin-bottom:18px; color:#99e5fd; letter-spacing:0.7px;
+      text-shadow: 0px .5px 6px #0ff3;
+      padding:2px 0 14px 0; font-weight:500;
+    }
+    #question {
+      font-size:1.15em; margin:0.3em 0 1em 0;
+      color:#fff; min-height:44px;
+      text-shadow: 0 1px 10px #23fff352;
+    }
+    .option {
+      background: linear-gradient(90deg,#1b425e91 0%,#0ff9 120%);
+      margin:12px 0; padding:15px 4px;
+      border-radius:11px; border: none;
+      font-size:1.04em;
+      box-shadow: 0 2px 12px #0ff8,0 1px 4px #00ffc04f inset;
+      transition:.19s;border-left: 4px solid #26ffe7aa;
+      cursor:pointer; color:#eafaff;
+      opacity:1;
+      outline:none; filter: brightness(1.03);
+      position:relative;
+    }
+    .option:hover {filter: brightness(1.22); background: linear-gradient(90deg,#2e7fff9e 20%,#16e3ecff 140%);}
+    .option.correct {background: linear-gradient(90deg,#29e0b8 0%,#7bffc9 110%);
+      color:#202b20; border-left:4px solid #23ff93; box-shadow: 0 1px 12px #6fffdc}
+    .option.incorrect {background: linear-gradient(90deg,#c94276,#ff8f85 96%); color:#fff4; opacity:.6;}
+    #feedback {
+      margin: 6px 0 4px 0; font-size: 1.01em;
+      padding: 6px 14px; color: #fafaff; font-weight: 600; min-height: 30px;
+      letter-spacing:.1em; border-radius: 7px; display: none;
+    }
+    #feedback.right { background: #23ffc4d5; color:#047454; box-shadow: 0 1px 11px #12ffbb2f;}
+    #feedback.wrong { background: #ff7b8eec; color: #3d010a;}
+    #why {
+      padding:6px 10px; border-radius:7px; margin:10px 0 4px 0;
+      background:#0ff7; color: #253b40; display: none;
+      font-size: .98em;
+      transition: opacity .2s;
+    }
+    #result {
+      margin-top: 18px; font-size: 1.23em; padding: 5px 0 2px 0; font-weight: bold; color: #23ffbb; text-shadow: 0 2px 11px #04ffd880;
+      display: none;
+    }
+    #summaryTable {margin:22px auto 4px auto; width:98%;background:#0ff3;border-radius:10px; border-collapse:collapse; box-shadow:0 1.5px 8px #00ffd410;}
+    #summaryTable th, #summaryTable td {padding: 7px 2px;text-align:left;border:none;}
+    #summaryTable th {background:#11e7abde; color:#08383a;}
+    #summaryTable tr.right {background: #e9fff3;}
+    #summaryTable tr.wrong {background: #ffe0e7;}
+    #restart {margin-top: 20px; padding: 10px 36px; border: none; border-radius: 10px;
+      background: linear-gradient(90deg,#07faf1 0%,#13daff 90%);
+      color: #043; font-size: 1.15em; font-weight:700; box-shadow: 0 2px 16px #05ffdd11;
+      letter-spacing:.08em; cursor: pointer; display:none;}
+    @media (max-width:600px) {#card{padding:16px 2vw 18px 2vw;}}
   </style>
 </head>
 <body>
   <div id="card">
+    <h1>Conceptual Learning</h1>
+    <div id="topic">Quiz Topic is Loading...</div>
     <div id="question"></div>
     <div id="options"></div>
+    <div id="feedback"></div>
     <div id="why"></div>
     <div id="result"></div>
+    <div id="summary"></div>
     <button id="restart">Restart Quiz</button>
   </div>
 
 <script>
-// CONFIG
+// ---- CONFIG ---
 const QUESTIONS_PER_SESSION = 20;
+const QUIZ_TOPIC = "Sample Chapter Name"; // <-- Set quiz topic here for each quiz!
 
-// GLOBALS
-let bank = [], quiz = [], idx = 0, score = 0;
-const qEl = document.getElementById("question"),
+// ---- STATE ---
+let bank = [], quiz = [], idx = 0, score = 0, answerRecord = [];
+const topicEl = document.getElementById("topic"),
+      qEl = document.getElementById("question"),
       oEl = document.getElementById("options"),
+      fbEl = document.getElementById("feedback"),
       wEl = document.getElementById("why"),
       rEl = document.getElementById("result"),
+      sumEl = document.getElementById("summary"),
       btn = document.getElementById("restart");
 
-// INIT
-fetch('quiz.csv')
-  .then(r => r.text())
-  .then(csv => {
-      bank = Papa.parse(csv, {header:true}).data
-        .filter(row => row.Question && row.Correct);
-      startNewSession();
-  })
-  .catch(err => alert("Cannot load quiz.csv - check filename & sharing settings"));
+// ---- LOAD CSV BANK ---
+fetch('quiz.csv').then(r=>r.text()).then(csv=>{
+  bank = Papa.parse(csv,{header:true,skipEmptyLines:true}).data.filter(row=>row.Question && row.Correct);
+  if(bank.length<QUESTIONS_PER_SESSION){alert("Not enough questions in quiz.csv!"); return;}
+  topicEl.textContent = QUIZ_TOPIC; // show quiz topic
+  startNewSession();
+}).catch(()=>{
+  alert("Cannot load quiz.csv - check filename & sharing settings");
+});
 
-function startNewSession(){
-    quiz = shuffle(bank).slice(0, QUESTIONS_PER_SESSION);
-    idx = score = 0;
-    qEl.classList.remove("hidden");
-    oEl.classList.remove("hidden");
-    rEl.style.display = 'none';
-    btn.style.display = 'none';
-    load();
+function startNewSession() {
+  quiz = shuffle(bank).slice(0, QUESTIONS_PER_SESSION);
+  idx = score = 0; answerRecord = [];
+  qEl.classList.remove("hidden"); oEl.classList.remove("hidden");
+  rEl.style.display = 'none';
+  fbEl.style.display = 'none';
+  wEl.style.display = 'none';
+  sumEl.innerHTML = '';
+  btn.style.display = 'none';
+  load();
 }
 
 function load(){
-    if(idx === quiz.length){finish();return;}
-    const cur = quiz[idx];
-    qEl.textContent = `${idx+1}/${quiz.length}. ${cur.Question}`;
-    oEl.innerHTML = "";
-    ['Option A','Option B','Option C','Option D'].forEach((key,i)=>{
-        const div = document.createElement("div");
-        div.className = "option";
-        div.textContent = cur[key];
-        div.onclick = () => check(i, cur);
-        oEl.appendChild(div);
-    });
-    wEl.style.display = 'none';
-}
+  if(idx === quiz.length){ finish(); return; }
+  const cur = quiz[idx];
+  qEl.textContent = `${idx+1}/${quiz.length}: ${cur.Question}`;
+  oEl.innerHTML = "";
+  fbEl.style.display = "none"; wEl.style.display = "none";
+  let answered = false;
 
-function check(selected, cur){
-    const right = 'ABCD'.indexOf(cur.Correct.trim().toUpperCase());
-    if(selected === right) score++;
-    if(cur.Reasoning && cur.Reasoning.trim() !== ""){
-        wEl.textContent = cur.Reasoning;
-        wEl.style.display = 'block';
-        setTimeout(() => { idx++; load(); }, 3200);
-    } else {
-        idx++;
-        load();
-    }
+  ['Option A','Option B','Option C','Option D'].forEach((key,i)=>{
+    const div = document.createElement("div");
+    div.className = "option";
+    div.textContent = cur[key];
+    div.onclick = () => {
+      if(answered) return; answered = true;
+      const right = 'ABCD'.indexOf(cur.Correct.trim().toUpperCase());
+      const result = (i === right);
+      if(result) {
+        div.classList.add('correct');
+        fbEl.textContent = "Correct! 🌟";
+        fbEl.className = "right"; fbEl.style.display = 'block';
+        score++;
+      } else {
+        div.classList.add('incorrect');
+        fbEl.textContent = `Wrong! Correct: ${cur['Option '+['A','B','C','D'][right]]}`;
+        fbEl.className = "wrong"; fbEl.style.display = 'block';
+        // Mark which one was actually correct
+        oEl.children[right].classList.add('correct');
+      }
+      // Explanation if any
+      if(cur.Reasoning && cur.Reasoning.trim() !== "") {
+        wEl.textContent = cur.Reasoning; wEl.style.display='block';
+      }
+      // Record for results table later
+      answerRecord.push({
+        num: idx+1,
+        q: cur.Question,
+        your: cur[key],
+        correct: cur['Option '+['A','B','C','D'][right]],
+        isright: result
+      });
+      setTimeout(()=>{ idx++; load(); }, 1800 + (cur.Reasoning && cur.Reasoning.trim()? 1500 : 0)); // Short delay before next
+    };
+    oEl.appendChild(div);
+  });
 }
 
 function finish(){
-    qEl.classList.add("hidden");
-    oEl.classList.add("hidden");
-    wEl.style.display = 'none';
-    rEl.textContent = `Finished! You scored ${score}/${quiz.length}.`;
-    rEl.style.display = 'block';
-    btn.style.display = 'inline-block';
+  qEl.classList.add("hidden"); oEl.classList.add("hidden");
+  wEl.style.display='none'; fbEl.style.display='none';
+  rEl.textContent = `Quiz Over! Your Score: ${score}/${quiz.length}`;
+  rEl.style.display = 'block';
+  // Show summary table
+  let s=`<table id="summaryTable"><tr><th>#</th><th>Q</th><th>Your Ans</th><th>Correct</th><th>Status</th></tr>`;
+  answerRecord.forEach(rec=>{
+      s+=`<tr class="${rec.isright?'right':'wrong'}">
+      <td>${rec.num}</td>
+      <td>${rec.q}</td>
+      <td>${rec.your||'-'}</td>
+      <td>${rec.correct||'-'}</td>
+      <td>${rec.isright?'<span style="color:#0a6">✔</span>':'<span style="color:#b00">✗</span>'}</td></tr>`;
+  });
+  s+="</table>";
+  sumEl.innerHTML = s;
+  btn.style.display = 'inline-block';
 }
 
-btn.onclick = () => {
-    qEl.classList.remove("hidden");
-    oEl.classList.remove("hidden");
-    startNewSession();
-};
+btn.onclick = startNewSession;
 
+// Utility: Fisher-Yates Shuffle
 function shuffle(arr){
-    return arr.map(v => [Math.random(), v])
-              .sort((a,b) => a[0] - b[0])
-              .map(v => v[1]);
+    return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);
 }
 </script>
 </body>
