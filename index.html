@@ -1,6 +1,13 @@
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Quiz Title</title>
+  <!-- PapaParse library (must be before your main script) -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+ <script>
 // ---------- CONFIG ----------
 const QUESTIONS_PER_SESSION = 20;
 
@@ -77,3 +84,11 @@ function shuffle(arr){
               .map(v => v[1]);
 }
 </script>
+ <!-- Your quiz HTML elements here -->
+
+  <!-- Your main quiz script STARTS BELOW THIS LINE (can be at end of body or in head) -->
+  <script>
+    // Your quiz JS (the script you pasted above)
+  </script>
+</body>
+</html>
