@@ -329,7 +329,7 @@
           btnNext = document.getElementById("nextBtn");
 
     // ========== LOAD CSV ==========
-    fetch('force_and_laws_of_motion.csv')
+    fetch('quiz.csv')
       .then(r => r.text())
       .then(csv => {
         bank = Papa.parse(csv, {header: true, skipEmptyLines: true}).data
@@ -525,3 +525,4 @@
   </script>
 </body>
 </html>
+
