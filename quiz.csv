@@ -1,4 +1,4 @@
-﻿Question,Option A,Option B,Option C,Option D,Correct,Reasoning,,,,,
+﻿Question,Option A,Option B,Option C,Option D,Correct,Reasoning.,,,,,
 What is the capital of Germany?,Berlin,Madrid,Paris,Rome,A,Berlin is the capital city of Germany.,,,,,
 Which planet is known as the Red Planet?,Earth,Venus,Mars,Jupiter,C,Mars is known as the Red Planet because of its reddish appearance.,,,,,
 Who wrote 'Romeo and Juliet'?,Charles Dickens,William Shakespeare,Leo Tolstoy,Mark Twain,B,William Shakespeare authored 'Romeo and Juliet'.,,,,,
@@ -28,4 +28,5 @@ Who wrote 'Harry Potter' series?,J.K. Rowling,Stephen King,Agatha Christie,Georg
 What is 15% of 200?,25,30,35,40,B,15% of 200 is 30.,,,,,
 What device is used to measure temperature?,Barometer,Hydrometer,Thermometer,Altimeter,C,Thermometer measures temperature.,,,,,
 Which country gifted the Statue of Liberty to the USA?,France,England,Spain,Italy,A,France gifted the Statue of Liberty to the USA.,,,,,
+
 
