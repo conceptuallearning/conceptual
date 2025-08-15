@@ -1,4 +1,4 @@
-﻿Question,Option A,Option  B,Option  C,Option  D,Correct,Reasoning
+﻿Question,Option A,Option B,Option C,Option D,Correct,Reasoning
 Which of the following is not a pure substance?,Water,Air,Diamond,Gold,B,Air is a mixture of gases and not a pure substance.
 Which of the following is a homogeneous mixture?,Orange juice with pulp,Sand and water,Saltwater,Oil and vinegar,C,"Saltwater has uniform composition throughout, so is a homogeneous mixture."
 Which of the following mixtures can be separated by filtration?,Salt solution,Air,Soil in water,Sugar solution,C,Soil in water contains insoluble particles which can be filtered out.
@@ -50,3 +50,4 @@ Which of these is a type of mixture?,Suspension,Colloid,Solution,All of these,D,
 Which substance is a colloid?,Air,Milk,Sea water,Salt solution,B,Milk is a colloidal mixture.
 Which of these is NOT a way to express concentration?,Mass by mass,Mass by volume,Volume by volume,Solute by solvent weight,D,Concentration expressions do not use this term.
 Which of these describes a solution with less solute than saturation?,Concentrated,Saturated,Unsaturated,Supersaturated,C,Unsaturated solutions have less solute than they can potentially dissolve at the given temperature.
+
