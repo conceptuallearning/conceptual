@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Science Study Schedule – Conceptual Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@700;900&family=Fira+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --chem: #FF6B6B;
+    --chem-light: #fff0f0;
+    --bio: #2ECC71;
+    --bio-light: #efffee;
+    --phy: #3498DB;
+    --phy-light: #eef6ff;
+    --rev: #9B59B6;
+    --rev-light: #f5eeff;
+    --exam: #F39C12;
+    --exam-light: #fff8e1;
+    --break: #95A5A6;
+    --break-light: #f4f6f7;
+    --bg: #F7F9FC;
+    --card: #fff;
+    --header-grad: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    --accent: #e94560;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: #222;
+    min-height: 100vh;
+  }
+
+  /* ====== HEADER ====== */
+  .site-header {
+    background: var(--header-grad);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(233,69,96,0.15);
+    pointer-events: none;
+  }
+  .site-header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(52,152,219,0.12);
+    pointer-events: none;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .brand-icon {
+    width: 54px; height: 54px;
+    background: linear-gradient(135deg, #e94560, #f39c12);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 4px 20px rgba(233,69,96,0.4);
+  }
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .brand-name span { color: #e94560; }
+  .tagline {
+    font-size: 0.95rem;
+    color: #aac4e8;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+  .schedule-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .schedule-meta {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 14px;
+  }
+  .meta-pill {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 30px;
+    padding: 6px 18px;
+    font-size: 0.82rem;
+    color: #d8eaff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .meta-pill span { color: #f39c12; }
+
+  /* ====== LEGEND ====== */
+  .legend-bar {
+    background: #fff;
+    border-bottom: 2px solid #e8edf3;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 0.82rem; font-weight: 700;
+  }
+  .legend-dot {
+    width: 14px; height: 14px; border-radius: 4px;
+  }
+
+  /* ====== MAIN ====== */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+  }
+
+  /* ====== SCORE TARGET ====== */
+  .score-banner {
+    background: linear-gradient(135deg, #e94560, #f39c12);
+    border-radius: 16px;
+    padding: 20px 30px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 32px;
+    box-shadow: 0 6px 24px rgba(233,69,96,0.3);
+  }
+  .score-number {
+    font-family: 'Fira Mono', monospace;
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 110px;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .score-text h3 { font-size: 1.1rem; font-weight: 900; margin-bottom: 4px; }
+  .score-text p { font-size: 0.85rem; opacity: 0.9; line-height: 1.5; }
+
+  /* ====== SYLLABUS OVERVIEW ====== */
+  .section-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-heading::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, #e94560, transparent);
+  }
+
+  .syllabus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .syllabus-card {
+    border-radius: 14px;
+    padding: 16px;
+    border-left: 5px solid;
+    transition: transform 0.2s;
+  }
+  .syllabus-card:hover { transform: translateY(-3px); }
+  .syllabus-card.chem { background: var(--chem-light); border-color: var(--chem); }
+  .syllabus-card.bio  { background: var(--bio-light); border-color: var(--bio); }
+  .syllabus-card.phy  { background: var(--phy-light); border-color: var(--phy); }
+  .syllabus-card .s-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.6;
+    margin-bottom: 4px;
+  }
+  .syllabus-card .s-title {
+    font-weight: 800;
+    font-size: 0.92rem;
+    margin-bottom: 8px;
+    color: #1a1a2e;
+  }
+  .syllabus-card .s-marks {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    color: #fff;
+  }
+  .chem .s-marks { background: var(--chem); }
+  .bio  .s-marks { background: var(--bio); }
+  .phy  .s-marks { background: var(--phy); }
+
+  /* ====== DAY CARD ====== */
+  .day-section { margin-bottom: 48px; }
+  .day-header {
+    border-radius: 16px 16px 0 0;
+    padding: 18px 24px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .day-header .day-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+  }
+  .day-header .day-date {
+    font-size: 0.82rem;
+    opacity: 0.85;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .day-header .day-hours {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+
+  .day-body {
+    background: var(--card);
+    border-radius: 0 0 16px 16px;
+    border: 2px solid #e8edf3;
+    border-top: none;
+    overflow: hidden;
+  }
+
+  /* Session rows */
+  .session {
+    display: grid;
+    grid-template-columns: 120px 90px 1fr;
+    border-bottom: 1px solid #f0f4f8;
+    transition: background 0.15s;
+  }
+  .session:last-child { border-bottom: none; }
+  .session:hover { background: #fafbfc; }
+
+  .s-time {
+    padding: 14px 16px;
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #555;
+    border-right: 1px solid #eef2f7;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 16px;
+  }
+  .s-type-badge {
+    padding: 14px 12px;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 16px;
+    border-right: 1px solid #eef2f7;
+  }
+  .badge {
+    border-radius: 6px;
+    padding: 3px 9px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .badge.chem { background: var(--chem); color: #fff; }
+  .badge.bio  { background: var(--bio); color: #fff; }
+  .badge.phy  { background: var(--phy); color: #fff; }
+  .badge.rev  { background: var(--rev); color: #fff; }
+  .badge.exam { background: var(--exam); color: #fff; }
+  .badge.brk  { background: var(--break); color: #fff; }
+  .badge.tip  { background: #1a1a2e; color: #fff; }
+
+  .s-content {
+    padding: 14px 18px;
+  }
+  .s-chapter {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+  }
+  .s-topics {
+    font-size: 0.8rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 6px;
+  }
+  .s-howto {
+    font-size: 0.77rem;
+    font-weight: 700;
+    color: #888;
+  }
+  .s-howto span {
+    display: inline-block;
+    background: #f0f4f8;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin: 2px 2px 2px 0;
+    color: #444;
+  }
+
+  /* ====== EXAM DAY ====== */
+  .exam-day .day-header { background: linear-gradient(135deg, #f39c12, #e74c3c); }
+  .exam-timeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0;
+  }
+  .exam-slot {
+    padding: 20px;
+    border-right: 1px solid #f0f4f8;
+    text-align: center;
+  }
+  .exam-slot:last-child { border-right: none; }
+  .exam-slot .e-time {
+    font-family: 'Fira Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f39c12;
+    margin-bottom: 6px;
+  }
+  .exam-slot .e-task {
+    font-weight: 800;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+  .exam-slot .e-desc { font-size: 0.78rem; color: #666; line-height: 1.5; }
+  .exam-slot.highlight { background: linear-gradient(135deg, #fff8e1, #fff3e0); }
+
+  /* ====== IMAGE GUIDE ====== */
+  .image-guide {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 36px;
+    color: #fff;
+  }
+  .image-guide h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #f39c12;
+  }
+  .img-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .img-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .img-card .ic-icon { font-size: 2rem; margin-bottom: 8px; }
+  .img-card .ic-title { font-weight: 800; font-size: 0.85rem; margin-bottom: 6px; color: #aac4e8; }
+  .img-card .ic-list { font-size: 0.77rem; color: #c0d6ef; line-height: 1.8; }
+
+  /* ====== PRO TIPS ====== */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .tip-card {
+    border-radius: 14px;
+    padding: 18px;
+    border-top: 4px solid;
+  }
+  .tip-card:nth-child(1) { background: #fff0f0; border-color: #e74c3c; }
+  .tip-card:nth-child(2) { background: #efffee; border-color: #27ae60; }
+  .tip-card:nth-child(3) { background: #eef6ff; border-color: #2980b9; }
+  .tip-card:nth-child(4) { background: #f5eeff; border-color: #8e44ad; }
+  .tip-card:nth-child(5) { background: #fff8e1; border-color: #f39c12; }
+  .tip-card .tip-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .tip-card .tip-title { font-weight: 900; font-size: 0.88rem; margin-bottom: 5px; color: #1a1a2e; }
+  .tip-card .tip-text { font-size: 0.78rem; color: #555; line-height: 1.6; }
+
+  /* ====== FORMULAS ====== */
+  .formula-box {
+    background: #1a1a2e;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 36px;
+    color: #fff;
+  }
+  .formula-box h2 {
+    font-family: 'Playfair Display', serif;
+    color: #f39c12;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+  }
+  .formula-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .formula-col h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    opacity: 0.7;
+  }
+  .formula-col ul {
+    list-style: none;
+    padding: 0;
+  }
+  .formula-col ul li {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.78rem;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    color: #aac4e8;
+  }
+  .formula-col ul li strong { color: #f39c12; }
+
+  /* ====== FOOTER ====== */
+  .footer {
+    background: var(--header-grad);
+    color: #aac4e8;
+    text-align: center;
+    padding: 22px;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+  }
+  .footer strong { color: #f39c12; }
+
+  /* Day color themes */
+  .d1 .day-header { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+  .d2 .day-header { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+  .d3 .day-header { background: linear-gradient(135deg, #3498db, #2980b9); }
+  .d4 .day-header { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+  /* ====== RESPONSIVE ====== */
+  @media (max-width: 700px) {
+    .syllabus-grid { grid-template-columns: 1fr; }
+    .session { grid-template-columns: 100px 80px 1fr; }
+    .brand-name { font-size: 1.5rem; }
+    .schedule-title { font-size: 1.2rem; }
+    .score-number { font-size: 2.5rem; }
+  }
+  @media print {
+    .day-section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SITE HEADER ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand-logo">
+      <div class="brand-icon">🧠</div>
+      <div class="brand-name">Conceptual <span>Learning</span></div>
+    </div>
+    <div class="tagline">✦ Futurising Education with Innovation ✦</div>
+    <div class="schedule-title">📅 Class 10 Science – Exam Preparation Schedule 2026</div>
+    <div class="schedule-meta">
+      <div class="meta-pill">📚 NCERT <span>Latest 2026</span> Pattern</div>
+      <div class="meta-pill">🗓 Feb 21–24 <span>Study Days</span></div>
+      <div class="meta-pill">🎯 Exam: <span>25 Feb 2026</span></div>
+      <div class="meta-pill">⏰ Report by <span>9:30 AM</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- Legend -->
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot" style="background:#FF6B6B"></div> Chemistry</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2ECC71"></div> Biology</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3498DB"></div> Physics</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9B59B6"></div> Revision</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#F39C12"></div> Mock Paper</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#95A5A6"></div> Break / Meal</div>
+</div>
+
+<div class="main">
+
+  <!-- ===== TARGET SCORE ===== -->
+  <div class="score-banner">
+    <div class="score-number">90%+</div>
+    <div class="score-text">
+      <h3>🎯 Your Target Score – Class 10 Science Board Exam</h3>
+      <p>This schedule is designed so you cover <strong>100% NCERT syllabus</strong>, attempt 2 full mock papers, and revise all diagrams, formulas & definitions. Each topic is mapped to exam weight so you study smarter, not just harder. Follow every session – <strong>90 marks is achievable!</strong></p>
+    </div>
+  </div>
+
+  <!-- ===== SYLLABUS OVERVIEW ===== -->
+  <div class="section-heading">📖 NCERT 2026 Syllabus – Chapter Overview</div>
+  <div class="syllabus-grid">
+    <div class="syllabus-card chem">
+      <div class="s-label">Chemistry</div>
+      <div class="s-title">⚗️ Ch 1: Chemical Reactions & Equations</div>
+      <div class="s-marks">~8 Marks</div>
+    </div>
+    <div class="syllabus-card chem">
+      <div class="s-label">Chemistry</div>
+      <div class="s-title">⚗️ Ch 2: Acids, Bases and Salts</div>
+      <div class="s-marks">~10 Marks</div>
+    </div>
+    <div class="syllabus-card chem">
+      <div class="s-label">Chemistry</div>
+      <div class="s-title">⚗️ Ch 3: Metals and Non-metals</div>
+      <div class="s-marks">~8 Marks</div>
+    </div>
+    <div class="syllabus-card chem">
+      <div class="s-label">Chemistry</div>
+      <div class="s-title">⚗️ Ch 4: Carbon and its Compounds</div>
+      <div class="s-marks">~8 Marks</div>
+    </div>
+    <div class="syllabus-card bio">
+      <div class="s-label">Biology</div>
+      <div class="s-title">🌿 Ch 5: Life Processes</div>
+      <div class="s-marks">~10 Marks</div>
+    </div>
+    <div class="syllabus-card bio">
+      <div class="s-label">Biology</div>
+      <div class="s-title">🌿 Ch 6: Control and Coordination</div>
+      <div class="s-marks">~8 Marks</div>
+    </div>
+    <div class="syllabus-card bio">
+      <div class="s-label">Biology</div>
+      <div class="s-title">🌿 Ch 7: How do Organisms Reproduce?</div>
+      <div class="s-marks">~8 Marks</div>
+    </div>
+    <div class="syllabus-card bio">
+      <div class="s-label">Biology</div>
+      <div class="s-title">🌿 Ch 8: Heredity</div>
+      <div class="s-marks">~6 Marks</div>
+    </div>
+    <div class="syllabus-card phy">
+      <div class="s-label">Physics</div>
+      <div class="s-title">💡 Ch 9: Light – Reflection & Refraction</div>
+      <div class="s-marks">~10 Marks</div>
+    </div>
+    <div class="syllabus-card phy">
+      <div class="s-label">Physics</div>
+      <div class="s-title">💡 Ch 10: Human Eye & Colourful World</div>
+      <div class="s-marks">~6 Marks</div>
+    </div>
+    <div class="syllabus-card phy">
+      <div class="s-label">Physics</div>
+      <div class="s-title">💡 Ch 11: Electricity</div>
+      <div class="s-marks">~10 Marks</div>
+    </div>
+    <div class="syllabus-card phy">
+      <div class="s-label">Physics</div>
+      <div class="s-title">💡 Ch 12: Magnetic Effects of Electric Current</div>
+      <div class="s-marks">~6 Marks</div>
+    </div>
+    <div class="syllabus-card bio">
+      <div class="s-label">Environment</div>
+      <div class="s-title">🌍 Ch 13: Our Environment</div>
+      <div class="s-marks">~4 Marks</div>
+    </div>
+  </div>
+
+  <!-- ===== DAY 1 ===== -->
+  <div class="day-section d1">
+    <div class="section-heading">Day 1 – Saturday, 21 February 2026</div>
+    <div class="day-header">
+      <div>
+        <div class="day-name">🔴 Day 1 – Chemistry Focus</div>
+        <div class="day-date">Saturday, 21 February 2026</div>
+      </div>
+      <div class="day-hours">⏱ 4:00 PM – 11:00 PM &nbsp;|&nbsp; 7 Hours</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="s-time">4:00 – 4:20 PM</div>
+        <div class="s-type-badge"><span class="badge tip">Setup</span></div>
+        <div class="s-content">
+          <div class="s-chapter">📋 Orientation & Planning (20 min)</div>
+          <div class="s-topics">Gather all materials: NCERT textbook, notebook, pens (multiple colours), pencil, ruler, eraser. Write today's target chapters at top of page. Keep a water bottle. Switch off social media notifications.</div>
+          <div class="s-howto"><span>✏️ Write targets</span><span>📵 Phone on DND</span><span>💧 Water ready</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">4:20 – 5:50 PM</div>
+        <div class="s-type-badge"><span class="badge chem">Chem</span></div>
+        <div class="s-content">
+          <div class="s-chapter">⚗️ Ch 1: Chemical Reactions & Equations</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Types of chemical reactions (combination, decomposition, displacement, double displacement, oxidation-reduction). Balancing chemical equations. Writing word equations. Exothermic vs endothermic reactions. Corrosion and rancidity.<br>
+            <strong>Key Equations to memorise:</strong> Fe + CuSO₄ → FeSO₄ + Cu | 2Mg + O₂ → 2MgO | 2H₂ + O₂ → 2H₂O
+          </div>
+          <div class="s-howto"><span>📖 Read NCERT</span><span>✍️ Write reactions</span><span>🎨 Use red/blue for reactants/products</span><span>⚖️ Balance 5 equations</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">5:50 – 6:30 PM</div>
+        <div class="s-type-badge"><span class="badge chem">Chem</span></div>
+        <div class="s-content">
+          <div class="s-chapter">⚗️ Ch 2: Acids, Bases and Salts – Part 1</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Properties of acids and bases. pH scale (0–14). Indicators (litmus, phenolphthalein). Strong vs weak acids/bases. Formation of salts. Common salts: NaCl, NaOH, HCl, H₂SO₄, Na₂CO₃, NaHCO₃.
+          </div>
+          <div class="s-howto"><span>🌈 Draw pH scale in colour</span><span>📝 Memorise salt reactions</span><span>✅ NCERT exercises Q1–Q5</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">6:30 – 7:00 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🍵 Evening Snack & Refresh Break</div>
+          <div class="s-topics">Have a light snack. Walk around for 5 minutes. Splash water on your face. Do not use phone for social media.</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">7:00 – 7:45 PM</div>
+        <div class="s-type-badge"><span class="badge chem">Chem</span></div>
+        <div class="s-content">
+          <div class="s-chapter">⚗️ Ch 2: Acids, Bases and Salts – Part 2</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Preparation of bleaching powder, baking soda, washing soda, plaster of paris. Water of crystallisation. Importance in daily life. Reaction of Na₂CO₃ + HCl, NaHCO₃ + HCl.
+          </div>
+          <div class="s-howto"><span>🧪 Tabulate uses of each compound</span><span>📝 Formula flash cards</span><span>✅ Solve NCERT Q6–Q10</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">7:45 – 9:00 PM</div>
+        <div class="s-type-badge"><span class="badge chem">Chem</span></div>
+        <div class="s-content">
+          <div class="s-chapter">⚗️ Ch 3: Metals and Non-metals</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Physical & chemical properties of metals and non-metals. Reactivity series. Ionic bond formation. Metallurgy – ore, mineral, gangue, flux, slag. Refining of metals. Corrosion prevention (galvanisation, alloying). Non-metals like S, P, Cl, O.
+          </div>
+          <div class="s-howto"><span>📊 Draw reactivity series</span><span>🔄 Flowchart of metallurgy</span><span>✅ All NCERT in-text Qs</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">9:00 – 9:30 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🍽️ Dinner Break</div>
+          <div class="s-topics">Have a proper meal. Rest for 10 minutes after dinner. Keep it light – avoid heavy food at night.</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">9:30 – 10:45 PM</div>
+        <div class="s-type-badge"><span class="badge chem">Chem</span></div>
+        <div class="s-content">
+          <div class="s-chapter">⚗️ Ch 4: Carbon and its Compounds</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Covalent bonds. Allotropes of carbon (diamond, graphite, fullerene). Hydrocarbons – alkanes, alkenes, alkynes, aromatic. Functional groups. Homologous series. IUPAC nomenclature. Ethanol and Ethanoic acid properties. Soaps & detergents – micelle formation, cleansing action.
+          </div>
+          <div class="s-howto"><span>✍️ Draw structures of CH₄, C₂H₄, C₂H₂</span><span>📋 Functional group table</span><span>✅ NCERT exercise Qs</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">10:45 – 11:00 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Revise</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🔁 Quick Recall – Chemistry Day 1 (15 min)</div>
+          <div class="s-topics">Flip through your notes. Recite key equations and facts aloud. Circle any topic you felt unsure about – highlight it in yellow for revision.</div>
+          <div class="s-howto"><span>🗣️ Say aloud</span><span>🟡 Highlight gaps</span><span>💤 Sleep by 11:30 PM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DAY 2 ===== -->
+  <div class="day-section d2">
+    <div class="section-heading">Day 2 – Sunday, 22 February 2026</div>
+    <div class="day-header">
+      <div>
+        <div class="day-name">🟢 Day 2 – Biology Focus</div>
+        <div class="day-date">Sunday, 22 February 2026</div>
+      </div>
+      <div class="day-hours">⏱ 10:00 AM – 11:00 PM &nbsp;|&nbsp; 13 Hours</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="s-time">10:00 – 11:30 AM</div>
+        <div class="s-type-badge"><span class="badge bio">Bio</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🌿 Ch 5: Life Processes – Part 1</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Nutrition: autotrophic (photosynthesis – diagram of leaf section, chloroplast) & heterotrophic. Respiration: aerobic vs anaerobic. Glycolysis, Krebs cycle (overview). Human digestive system – diagram with labels (mouth, oesophagus, stomach, small intestine, large intestine, villi). Enzymes: amylase, pepsin, lipase, trypsin.
+          </div>
+          <div class="s-howto"><span>🖊️ Draw & label digestive system</span><span>📊 Flowchart of digestion</span><span>✅ NCERT Q1–Q5</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">11:30 AM – 1:00 PM</div>
+        <div class="s-type-badge"><span class="badge bio">Bio</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🌿 Ch 5: Life Processes – Part 2</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Circulatory system: human heart diagram (4 chambers, valves, aorta, pulmonary artery), double circulation. Blood components. Blood pressure. Excretion: nephron diagram, filtration, reabsorption, urine formation. Artificial kidney (dialysis). Transpiration in plants – xylem and phloem.
+          </div>
+          <div class="s-howto"><span>🫀 Draw heart diagram with arrows</span><span>🫘 Draw nephron diagram</span><span>📝 Tabulate differences</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">1:00 – 2:00 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🍽️ Lunch Break – Rest & Refresh</div>
+          <div class="s-topics">Have a proper lunch. Rest for 20 minutes – either a short nap or quiet time. Avoid screens. Return to study fresh.</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">2:00 – 3:30 PM</div>
+        <div class="s-type-badge"><span class="badge bio">Bio</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🌿 Ch 6: Control and Coordination</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Nervous system: neuron diagram (dendrite, axon, myelin sheath, synapse). CNS vs PNS. Reflex arc diagram & explanation. Brain parts: forebrain, midbrain, hindbrain. Spinal cord. Hormones: endocrine glands (pituitary, thyroid, adrenal, pancreas). Plant hormones: auxin, gibberellin, cytokinin, abscisic acid. Tropic movements.
+          </div>
+          <div class="s-howto"><span>🧠 Draw labelled neuron</span><span>🔁 Draw reflex arc</span><span>📋 Table of hormones & functions</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">3:30 – 5:00 PM</div>
+        <div class="s-type-badge"><span class="badge bio">Bio</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🌿 Ch 7: How do Organisms Reproduce?</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Asexual reproduction: fission (binary, multiple), fragmentation, regeneration, budding (Hydra), spore formation (Rhizopus), vegetative propagation. Sexual reproduction in plants: diagram of flower (stamens, pistil, ovule), pollination (self/cross), fertilisation, seed dispersal. Human reproductive system (male & female diagrams). Menstrual cycle. Contraception methods.
+          </div>
+          <div class="s-howto"><span>🌸 Draw labelled flower</span><span>⚕️ Draw male/female reproductive diagrams</span><span>📋 Table of asexual methods</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">5:00 – 5:30 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">☕ Evening Break (30 min)</div>
+          <div class="s-topics">Snack time. Short walk or stretching. Eye rest – look at something far away for 5 mins. Return fresh.</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">5:30 – 7:00 PM</div>
+        <div class="s-type-badge"><span class="badge bio">Bio</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🌿 Ch 8: Heredity</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Mendel's laws: Law of Dominance, Law of Segregation, Law of Independent Assortment. Monohybrid & dihybrid crosses (Punnett squares). Dominant vs recessive traits. Genotype & phenotype. Sex determination in humans (XX, XY). Variations: somatic vs germline. Evolution basics: Darwin's theory, natural selection, speciation. Homologous vs analogous organs. Vestigial organs.
+          </div>
+          <div class="s-howto"><span>✏️ Draw Punnett squares</span><span>🧬 TT × tt cross diagram</span><span>✅ Solve all NCERT Qs</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">7:00 – 7:30 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🍽️ Dinner Break</div>
+          <div class="s-topics">Dinner time. Light meal recommended. Take a 10-minute walk after eating. No phone during dinner.</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">7:30 – 9:00 PM</div>
+        <div class="s-type-badge"><span class="badge bio">Bio</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🌍 Ch 13: Our Environment</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Ecosystem: producers, consumers (herbivores, carnivores, omnivores), decomposers. Food chains & food webs. 10% energy flow rule. Trophic levels – pyramid of energy. Biodegradable vs non-biodegradable waste. Ozone layer – depletion by CFCs. Environmental issues: solid waste management, acid rain. Biological magnification.
+          </div>
+          <div class="s-howto"><span>🌱 Draw food chain diagram</span><span>🔺 Draw energy pyramid</span><span>📝 Define all key terms</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">9:00 – 10:00 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Revise</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🔁 Biology Day 2 – Complete Revision</div>
+          <div class="s-topics">Go through ALL Biology diagrams you drew today. Cover the labels and try to re-label from memory. Read all bolded terms in NCERT. Recite definitions aloud. Mark topics that need more attention.</div>
+          <div class="s-howto"><span>🗣️ Recite definitions</span><span>🖊️ Re-draw from memory</span><span>🟡 Mark weak areas</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">10:00 – 11:00 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Revise</span></div>
+        <div class="s-content">
+          <div class="s-chapter">📝 Day 1 Chemistry Recap + NCERT Back Exercises</div>
+          <div class="s-topics">Quickly re-read your Chemistry notes from Day 1. Solve any remaining NCERT exercise questions from Ch 1–4 you didn't complete. Write a one-page summary sheet of all chemical equations.</div>
+          <div class="s-howto"><span>📄 1-page formula sheet</span><span>✅ Complete pending NCERT Qs</span><span>💤 Sleep by 11:30 PM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DAY 3 ===== -->
+  <div class="day-section d3">
+    <div class="section-heading">Day 3 – Monday, 23 February 2026</div>
+    <div class="day-header">
+      <div>
+        <div class="day-name">🔵 Day 3 – Physics Focus + Full Subject Revision</div>
+        <div class="day-date">Monday, 23 February 2026</div>
+      </div>
+      <div class="day-hours">⏱ 10:00 AM – 11:00 PM &nbsp;|&nbsp; 13 Hours</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="s-time">10:00 – 11:30 AM</div>
+        <div class="s-type-badge"><span class="badge phy">Phy</span></div>
+        <div class="s-content">
+          <div class="s-chapter">💡 Ch 9: Light – Reflection & Refraction</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Laws of reflection. Spherical mirrors: concave, convex – ray diagrams (at least 3 positions each). Mirror formula: 1/v + 1/u = 1/f. Magnification m = -v/u. Sign convention. Refraction: Snell's law (n₁sinθ₁ = n₂sinθ₂). Refractive index. Critical angle and TIR. Lenses: concave, convex – ray diagrams. Lens formula: 1/v – 1/u = 1/f. Power of lens P = 1/f.
+          </div>
+          <div class="s-howto"><span>📐 Draw all ray diagrams</span><span>🧮 Solve 5 numerical problems</span><span>📋 Mirror vs Lens table</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">11:30 AM – 1:00 PM</div>
+        <div class="s-type-badge"><span class="badge phy">Phy</span></div>
+        <div class="s-content">
+          <div class="s-chapter">💡 Ch 10: Human Eye & the Colourful World</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Structure of human eye: cornea, iris, pupil, lens, retina, optic nerve, blind spot. Accommodation power. Defects: myopia (concave lens), hypermetropia (convex lens), presbyopia, astigmatism. Refraction through glass prism – dispersion, spectrum. Atmospheric refraction: twinkling of stars, advance sunrise/delayed sunset. Scattering of light: Tyndall effect, blue sky, red sunset.
+          </div>
+          <div class="s-howto"><span>👁️ Draw labelled eye diagram</span><span>🌈 Draw prism dispersion diagram</span><span>✅ NCERT exercises</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">1:00 – 2:00 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🍽️ Lunch Break</div>
+          <div class="s-topics">Proper lunch. 15-minute rest. You're halfway through – stay motivated! Great work so far.</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">2:00 – 4:00 PM</div>
+        <div class="s-type-badge"><span class="badge phy">Phy</span></div>
+        <div class="s-content">
+          <div class="s-chapter">💡 Ch 11: Electricity</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Electric current (I = Q/t). Potential difference (V). Resistance (R). Ohm's Law: V = IR. Resistivity. Combination of resistors: series (R = R₁+R₂+…) & parallel (1/R = 1/R₁+1/R₂+…). Electric power P = VI = I²R = V²/R. Commercial unit: 1 kWh = 3.6×10⁶ J. Heating effect of current: H = I²Rt. Fuse – importance. Circuit diagrams with symbols.
+          </div>
+          <div class="s-howto"><span>⚡ Draw series & parallel circuits</span><span>🧮 Solve 8 numericals</span><span>📋 All formulas table</span><span>✅ All NCERT Qs</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">4:00 – 4:30 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">☕ Short Break (30 min)</div>
+          <div class="s-topics">Snack break. Quick walk. Breathe deeply. You're doing amazing – only 1.5 chapters left for Physics!</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">4:30 – 6:00 PM</div>
+        <div class="s-type-badge"><span class="badge phy">Phy</span></div>
+        <div class="s-content">
+          <div class="s-chapter">💡 Ch 12: Magnetic Effects of Electric Current</div>
+          <div class="s-topics">
+            <strong>Topics:</strong> Magnetic field around a current-carrying conductor. Right-hand thumb rule. Magnetic field patterns of straight wire, circular loop, solenoid. Force on current-carrying conductor in magnetic field: F = BIL. Fleming's Left-Hand Rule. Electric motor principle & diagram. Electromagnetic induction. Faraday's law. Fleming's Right-Hand Rule. AC vs DC generator diagram. Domestic electric circuits: earth wire, live wire, neutral wire. Overloading & short-circuiting.
+          </div>
+          <div class="s-howto"><span>🔧 Draw electric motor diagram</span><span>⚙️ Draw generator diagram</span><span>✋ Practice Fleming's rules</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">6:00 – 7:30 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Revise</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🔁 Physics Complete Revision (Ch 9–12)</div>
+          <div class="s-topics">Re-do all ray diagrams. Re-solve 3 numericals from each chapter (especially Electricity). Recite all formulas. Make a formula quick-reference card on one sheet. Practise Fleming's rules physically with your hands.</div>
+          <div class="s-howto"><span>📐 Re-draw diagrams</span><span>🧮 Re-solve numericals</span><span>📄 Formula card</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">7:30 – 8:00 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🍽️ Dinner Break</div>
+          <div class="s-topics">Dinner time. Hydrate well. Take rest. Don't eat heavy food tonight.</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">8:00 – 9:30 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Revise</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🔁 Chemistry Full Revision (Ch 1–4)</div>
+          <div class="s-topics">Go through your Chemistry summary sheets. Write all important chemical equations on flashcards. Recite the reactivity series. Solve any NCERT back-exercise questions you missed. Focus on weak topics you marked on Day 1.</div>
+          <div class="s-howto"><span>🃏 Flashcard equations</span><span>🗣️ Recite aloud</span><span>🟡 Weak topic focus</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">9:30 – 11:00 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Revise</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🔁 Biology Full Revision (Ch 5–8, 13)</div>
+          <div class="s-topics">Re-draw ALL diagrams from memory without looking: digestive system, circulatory system, nephron, neuron, reflex arc, flower, human reproductive systems. Re-do Punnett square crosses. Re-read definitions of all key terms. Mark the most likely 3-mark and 5-mark questions.</div>
+          <div class="s-howto"><span>🖊️ All diagrams from memory</span><span>🧬 Punnett squares</span><span>⭐ Mark high-probability Qs</span><span>💤 Sleep by 11:30 PM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DAY 4 ===== -->
+  <div class="day-section d4">
+    <div class="section-heading">Day 4 – Tuesday, 24 February 2026</div>
+    <div class="day-header">
+      <div>
+        <div class="day-name">🟣 Day 4 – Mock Papers + Final Revision</div>
+        <div class="day-date">Tuesday, 24 February 2026</div>
+      </div>
+      <div class="day-hours">⏱ 10:00 AM – 11:00 PM &nbsp;|&nbsp; 13 Hours</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="s-time">10:00 – 12:30 PM</div>
+        <div class="s-type-badge"><span class="badge exam">Mock 1</span></div>
+        <div class="s-content">
+          <div class="s-chapter">📝 MOCK PAPER 1 – Full Exam Simulation (2.5 hrs)</div>
+          <div class="s-topics">
+            <strong>Attempt a complete previous year CBSE Science paper under strict exam conditions.</strong> Sit at a proper desk. No phone. No books open. Write answers in full sentences. Attempt all sections – MCQs, short answers, long answers, diagram-based questions. Manage time: MCQ section (15 min), Short Ans (45 min), Long Ans (60 min), Diagrams (20 min), Check (10 min).
+          </div>
+          <div class="s-howto"><span>⏱ Use stopwatch/timer</span><span>✏️ Write in proper format</span><span>📏 Neat diagrams</span><span>🚫 No external help</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">12:30 – 1:30 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Analyse</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🔍 Mock 1 Analysis – Find Your Weak Spots</div>
+          <div class="s-topics">Check your answers against the answer key. Calculate your estimated score. Mark every wrong or incomplete answer with red pen. List all topics you lost marks on. These become your priority for the next session.</div>
+          <div class="s-howto"><span>🔴 Mark errors in red</span><span>📋 List weak topics</span><span>🧮 Estimate score</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">1:30 – 2:30 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🍽️ Lunch Break</div>
+          <div class="s-topics">Proper lunch. Rest 15 minutes. Think positively about your preparation. You are doing great.</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">2:30 – 4:30 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Revise</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🔁 Targeted Revision – Weak Areas from Mock 1</div>
+          <div class="s-topics">Re-study ONLY the topics and chapters where you made errors. Re-read NCERT paragraphs carefully for those topics. Re-do similar questions. This focused revision is the most powerful thing you can do right now.</div>
+          <div class="s-howto"><span>🎯 Only weak areas</span><span>📖 NCERT re-read</span><span>🧮 Re-do similar Qs</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">4:30 – 5:00 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">☕ Break (30 min)</div>
+          <div class="s-topics">Snack. Relax. Deep breaths. You're almost ready for the exam!</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">5:00 – 7:30 PM</div>
+        <div class="s-type-badge"><span class="badge exam">Mock 2</span></div>
+        <div class="s-content">
+          <div class="s-chapter">📝 MOCK PAPER 2 – Timed Practice (2.5 hrs)</div>
+          <div class="s-topics">
+            <strong>Attempt a second CBSE sample paper or chapter-wise test.</strong> If no more full papers available, attempt: 20 MCQs + 10 short answer Qs + 5 long answer Qs of your choice from NCERT exercise questions. Focus on neat presentation, proper diagrams, and showing steps in numericals. Aim for maximum marks.
+          </div>
+          <div class="s-howto"><span>⏱ Strict timing</span><span>✏️ Full sentences</span><span>📐 Labelled diagrams</span><span>🧮 Show all steps</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">7:30 – 8:00 PM</div>
+        <div class="s-type-badge"><span class="badge brk">Break</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🍽️ Dinner Break</div>
+          <div class="s-topics">Dinner. Light meal. Rest. Tomorrow is the big day – you are READY!</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">8:00 – 9:30 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Revise</span></div>
+        <div class="s-content">
+          <div class="s-chapter">⭐ Golden Hour – Most Important Diagrams & Formulas</div>
+          <div class="s-topics">
+            <strong>Draw these diagrams from memory one last time:</strong> Digestive system, Human heart, Nephron, Neuron + Reflex arc, Flower (pollination), Human eye, Spherical mirror & lens ray diagrams, Electric motor, AC Generator, Domestic circuit, Reactivity series.<br>
+            <strong>Recite these formula groups:</strong> Mirror/Lens formulas, Ohm's Law family, Power formulas, Magnification, Snell's Law.
+          </div>
+          <div class="s-howto"><span>🖊️ All diagrams</span><span>🗣️ All formulas aloud</span><span>📝 One-page cheat summary</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">9:30 – 10:30 PM</div>
+        <div class="s-type-badge"><span class="badge rev">Final</span></div>
+        <div class="s-content">
+          <div class="s-chapter">📋 Final Mega-Recap: All Definitions & Keywords</div>
+          <div class="s-topics">Go through your notes and recall: definitions of photosynthesis, respiration, excretion, refraction, TIR, electromagnetic induction, corrosion, rancidity, biodegradability, trophic level, dominant & recessive. Say them aloud without reading. This strengthens memory for tomorrow.</div>
+          <div class="s-howto"><span>🗣️ Definitions aloud</span><span>🧠 From memory</span><span>✅ Tick what you know</span></div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="s-time">10:30 – 11:00 PM</div>
+        <div class="s-type-badge"><span class="badge tip">Prep</span></div>
+        <div class="s-content">
+          <div class="s-chapter">🎒 Exam Day Bag Preparation</div>
+          <div class="s-topics">
+            Pack your bag: Admit card (printed), School ID, 2 black pens + 1 pencil, ruler, eraser, sharpener, geometry box. Set 2 alarms for morning. Plan your route to exam centre – ensure you can reach by 9:30 AM comfortably. Sleep by 11:00–11:30 PM. No late night studying – sleep is crucial for memory!
+          </div>
+          <div class="s-howto"><span>🎒 Pack bag</span><span>⏰ Set 2 alarms</span><span>🗺️ Know your route</span><span>💤 Sleep by 11:00 PM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EXAM DAY ===== -->
+  <div class="day-section exam-day">
+    <div class="section-heading">Day 5 – Wednesday, 25 February 2026 – EXAM DAY</div>
+    <div class="day-header" style="background: linear-gradient(135deg, #f39c12, #e74c3c);">
+      <div>
+        <div class="day-name">🏆 EXAM DAY – Class 10 Science Board Exam</div>
+        <div class="day-date">Wednesday, 25 February 2026</div>
+      </div>
+      <div class="day-hours">🏫 Report to Centre by 9:30 AM</div>
+    </div>
+    <div class="day-body">
+      <div class="exam-timeline">
+        <div class="exam-slot">
+          <div class="e-time">5:30 – 6:00 AM</div>
+          <div class="e-task">🌅 Wake Up</div>
+          <div class="e-desc">Wake up fresh. Freshen up. Eat a light, nutritious breakfast (avoid heavy/oily food). Drink water.</div>
+        </div>
+        <div class="exam-slot highlight">
+          <div class="e-time">6:00 – 8:00 AM</div>
+          <div class="e-task">📖 Light Revision</div>
+          <div class="e-desc">Only go through your one-page formula card and diagram summaries. Do NOT read new topics. Just refresh what you know.</div>
+        </div>
+        <div class="exam-slot">
+          <div class="e-time">8:00 – 8:30 AM</div>
+          <div class="e-task">🎒 Get Ready</div>
+          <div class="e-desc">Check bag: admit card, ID, pens, pencil, ruler, eraser. Dress in uniform. Stay calm and confident.</div>
+        </div>
+        <div class="exam-slot highlight">
+          <div class="e-time">By 9:30 AM</div>
+          <div class="e-task">🏫 Reach Centre</div>
+          <div class="e-desc">Report to exam centre. Find your roll number on the board. Sit calmly. No last-minute panic studying.</div>
+        </div>
+        <div class="exam-slot">
+          <div class="e-time">First 15 min</div>
+          <div class="e-task">📄 Read Question Paper</div>
+          <div class="e-desc">Read the entire paper carefully. Plan which questions to attempt first. Attempt questions you know best first.</div>
+        </div>
+        <div class="exam-slot highlight">
+          <div class="e-time">In Exam</div>
+          <div class="e-task">✍️ Key Strategies</div>
+          <div class="e-desc">Draw diagrams neatly & label clearly. Show all steps in numericals. Write definitions precisely. Underline key terms. Attempt ALL questions.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== IMAGE GUIDE ===== -->
+  <div class="image-guide">
+    <h2>🖼️ Complete Diagram Guide – Images You MUST Draw in the Exam</h2>
+    <div class="img-grid">
+      <div class="img-card">
+        <div class="ic-icon">🧪</div>
+        <div class="ic-title">Chemistry Diagrams</div>
+        <div class="ic-list">
+          • Electrolytic cell setup<br>
+          • Structure of diamond & graphite<br>
+          • Soap micelle action<br>
+          • Carbon compound structures (CH₄, C₂H₂)<br>
+          • Reactivity series (chart form)
+        </div>
+      </div>
+      <div class="img-card">
+        <div class="ic-icon">🌿</div>
+        <div class="ic-title">Biology Diagrams</div>
+        <div class="ic-list">
+          • Human digestive system (labelled)<br>
+          • Human heart (4 chambers)<br>
+          • Nephron structure<br>
+          • Neuron with synapse<br>
+          • Reflex arc<br>
+          • Flower (parts of reproduction)<br>
+          • Male & female reproductive systems<br>
+          • Food chain & energy pyramid
+        </div>
+      </div>
+      <div class="img-card">
+        <div class="ic-icon">💡</div>
+        <div class="ic-title">Physics Diagrams</div>
+        <div class="ic-list">
+          • Ray diagrams (concave/convex mirror – 3 positions each)<br>
+          • Concave/convex lens ray diagrams<br>
+          • Prism dispersion of light<br>
+          • Human eye (labelled)<br>
+          • Series & parallel circuits<br>
+          • Electric motor<br>
+          • AC Generator<br>
+          • Solenoid magnetic field<br>
+          • Domestic electric circuit
+        </div>
+      </div>
+      <div class="img-card">
+        <div class="ic-icon">✏️</div>
+        <div class="ic-title">Diagram Drawing Rules</div>
+        <div class="ic-list">
+          • Use pencil for diagrams<br>
+          • Draw neat, reasonably large diagrams<br>
+          • Label with arrows pointing clearly<br>
+          • Write title above each diagram<br>
+          • Use ruler for straight lines<br>
+          • Colour coding optional but impressive<br>
+          • Always include a scale if needed<br>
+          • Label ALL parts mentioned in question
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FORMULAS ===== -->
+  <div class="formula-box">
+    <h2>📐 Must-Know Formulas at a Glance</h2>
+    <div class="formula-cols">
+      <div class="formula-col">
+        <h4>⚡ Electricity</h4>
+        <ul>
+          <li><strong>V = IR</strong> (Ohm's Law)</li>
+          <li><strong>P = VI = I²R = V²/R</strong></li>
+          <li><strong>H = I²Rt</strong> (Heating)</li>
+          <li><strong>R_series = R₁+R₂+…</strong></li>
+          <li><strong>1/R_parallel = 1/R₁+1/R₂</strong></li>
+          <li><strong>1 kWh = 3.6×10⁶ J</strong></li>
+        </ul>
+      </div>
+      <div class="formula-col">
+        <h4>💡 Light</h4>
+        <ul>
+          <li><strong>1/v + 1/u = 1/f</strong> (Mirror)</li>
+          <li><strong>1/v − 1/u = 1/f</strong> (Lens)</li>
+          <li><strong>m = −v/u</strong> (Mirror mag.)</li>
+          <li><strong>P = 1/f</strong> (Lens power, D)</li>
+          <li><strong>n = sin i / sin r</strong> (Snell's)</li>
+          <li><strong>n = c / v</strong> (Ref. index)</li>
+        </ul>
+      </div>
+      <div class="formula-col">
+        <h4>🌿 Biology Key Facts</h4>
+        <ul>
+          <li><strong>6CO₂+6H₂O → C₆H₁₂O₆+6O₂</strong></li>
+          <li><strong>10% energy</strong> passes each trophic level</li>
+          <li><strong>XX = female, XY = male</strong></li>
+          <li><strong>TT = dominant, tt = recessive</strong></li>
+          <li><strong>F = BIL</strong> (force on conductor)</li>
+          <li><strong>Mendel: Law of Segregation</strong></li>
+        </ul>
+      </div>
+      <div class="formula-col">
+        <h4>⚗️ Chemistry Key Equations</h4>
+        <ul>
+          <li><strong>2Mg + O₂ → 2MgO</strong></li>
+          <li><strong>Fe + CuSO₄ → FeSO₄ + Cu</strong></li>
+          <li><strong>NaOH + HCl → NaCl + H₂O</strong></li>
+          <li><strong>Na₂CO₃ + 2HCl → …</strong></li>
+          <li><strong>pH &lt;7 = Acid, &gt;7 = Base</strong></li>
+          <li><strong>Alkane: CₙH₂ₙ₊₂</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PRO TIPS ===== -->
+  <div class="section-heading">💎 Power Tips to Score 90%+</div>
+  <div class="tips-grid">
+    <div class="tip-card">
+      <div class="tip-icon">🎨</div>
+      <div class="tip-title">Use Colour Coding</div>
+      <div class="tip-text">Use different coloured pens while making notes. Red for definitions, Blue for formulas, Green for examples, Black for general text. Colour improves memory retention by up to 78%.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">📐</div>
+      <div class="tip-title">Perfect Your Diagrams</div>
+      <div class="tip-text">Every well-labelled diagram can fetch you 2–3 marks. Practice each Biology and Physics diagram 3 times from memory. Examiners give full marks for neat, labelled, titled diagrams.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🧮</div>
+      <div class="tip-title">Show Every Step</div>
+      <div class="tip-text">In numerical problems (Physics – Electricity, Light), always write: Given → Find → Formula → Substitution → Answer with unit. You get step marks even if the final answer is wrong.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">⭐</div>
+      <div class="tip-title">Attempt All Questions</div>
+      <div class="tip-text">Never leave any question blank. Even if unsure, write what you know. Partial answers fetch partial marks. Especially for 3-mark and 5-mark questions – write something relevant always.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">💤</div>
+      <div class="tip-title">Sleep is Non-Negotiable</div>
+      <div class="tip-text">A well-rested brain recalls information 40% faster. Sleep by 11:00 PM every night. On the night before the exam (24th night), sleep by 10:30 PM. Do NOT pull an all-nighter.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <strong>Conceptual Learning</strong> &nbsp;|&nbsp; ✦ Futurising Education with Innovation ✦ &nbsp;|&nbsp;
+  Class 10 Science Exam 2026 &nbsp;|&nbsp; You've prepared well — <strong>Go Ace That Exam! 🚀</strong>
+</footer>
+
+</body>
+</html>
