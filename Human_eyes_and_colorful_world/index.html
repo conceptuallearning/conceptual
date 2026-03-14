@@ -1,528 +1,1071 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Conceptual Learning Quiz</title>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <style>
-    /* Futuristic Background */
-    body {
-      margin:0; min-height:100vh;
-      background: linear-gradient(135deg, #070e22 65%, #1afdff 100%);
-      background-size: 150% 150%;
-      animation: bgmove 8s ease-in-out alternate infinite;
-      display: flex; justify-content: center; align-items: center;
-      font-family: "Segoe UI", Arial, sans-serif;
-      color:#eafaff; padding: 10px;
-    }
-    @keyframes bgmove {
-      0% {background-position: 0 0;}
-      100% {background-position: 100% 100%;}
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conceptual Learning Quiz</title>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+  /* ── GLOBAL ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Quiz Card */
-    #card {
-      background: rgba(21,52,85, 0.48);
-      border-radius: 20px;
-      box-shadow: 0 6px 30px #0ff4f840, 0 1.5px 3px #10ffdb44;
-      backdrop-filter: blur(18px);
-      max-width: 720px; width: 95%;
-      padding: 28px;
-      margin: 15px;
-      text-align: center;
-      border: 1.6px solid #12fff9bb;
-    }
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Exo+2:wght@300;400;500;600&display=swap');
 
-    /* Headers */
-    h1 {
-      font-size: 2.2em;
-      background: linear-gradient(90deg,#08fff1, #73d9fd 73%,#ffffff33);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 2px 8px #00ffd444, 0 0px 36px #0ff5;
-      margin: 0.2em 0 0.4em 0;
-      letter-spacing: 0.75px;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #070e22 60%, #0a2a3a 100%);
+    background-size: 150% 150%;
+    animation: bgmove 10s ease-in-out alternate infinite;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: 'Exo 2', Arial, sans-serif;
+    color: #eafaff;
+    padding: 16px;
+  }
+  @keyframes bgmove {
+    0%   { background-position: 0 0; }
+    100% { background-position: 100% 100%; }
+  }
 
-    #topic {
-      font-size: 1.4em;
-      margin-bottom: 25px;
-      color: #99e5fd;
-      letter-spacing: 0.7px;
-      text-shadow: 0px .5px 6px #0ff3;
-      padding: 2px 0 14px 0;
-      font-weight: 500;
-    }
+  /* ── CARD ── */
+  #card {
+    background: rgba(10, 28, 55, 0.72);
+    border-radius: 22px;
+    box-shadow: 0 8px 40px #0ff3, 0 2px 4px #10ffdb22;
+    backdrop-filter: blur(20px);
+    max-width: 740px;
+    width: 100%;
+    padding: 32px 28px;
+    margin: 20px auto;
+    border: 1.5px solid #12fff980;
+  }
 
-    /* Question */
-    #question {
-      font-size: 1.25em;
-      margin: 0.5em 0 1.2em 0;
-      color: #fff;
-      min-height: 50px;
-      text-shadow: 0 1px 10px #23fff352;
-      text-align: left;
-    }
+  /* ── HEADER ── */
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.9em;
+    background: linear-gradient(90deg, #08fff1, #73d9fd 70%, #ffffff40);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  #topic-title {
+    font-size: 1.2em;
+    color: #99e5fd;
+    text-align: center;
+    margin-bottom: 22px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
 
-    /* Options */
-    .option {
-      background: linear-gradient(90deg,#1b425e91 0%,#0ff9 120%);
-      margin: 14px 0;
-      padding: 16px 12px;
-      border-radius: 12px;
-      border: none;
-      font-size: 1.1em;
-      box-shadow: 0 2px 12px #0ff8, 0 1px 4px #00ffc04f inset;
-      transition: .19s;
-      border-left: 4px solid #26ffe7aa;
-      cursor: pointer;
-      color: #eafaff;
-      opacity: 1;
-      outline: none;
-      filter: brightness(1.03);
-      position: relative;
-      text-align: left;
-    }
+  /* ── PROGRESS BAR ── */
+  #progress-wrap {
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    height: 6px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #07faf1, #13daff);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
 
-    .option:hover {
-      filter: brightness(1.22);
-      background: linear-gradient(90deg,#2e7fff9e 20%,#16e3ecff 140%);
-    }
+  /* ── QUESTION ── */
+  #question {
+    font-size: 1.18em;
+    color: #fff;
+    margin-bottom: 18px;
+    line-height: 1.6;
+    min-height: 52px;
+    text-align: left;
+  }
+  #question img {
+    display: block;
+    max-width: 100%;
+    border-radius: 10px;
+    margin: 12px auto 4px auto;
+    border: 1px solid #0ff4;
+  }
 
-    .option.correct {
-      background: linear-gradient(90deg,#29e0b8 0%,#7bffc9 110%);
-      color: #202b20;
-      border-left: 4px solid #23ff93;
-      box-shadow: 0 1px 12px #6fffdc;
-    }
+  /* ── OPTIONS ── */
+  .option {
+    display: block;
+    width: 100%;
+    background: linear-gradient(90deg, #1b425e88 0%, #0a2a3a 100%);
+    margin: 10px 0;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #26ffe766;
+    font-size: 1.05em;
+    color: #eafaff;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s;
+    font-family: 'Exo 2', Arial, sans-serif;
+    outline: none;
+  }
+  .option:hover:not(:disabled) {
+    background: linear-gradient(90deg, #2e7fff88 20%, #16e3ec88 140%);
+    border-color: #07faf1;
+    transform: translateX(3px);
+  }
+  .option.correct {
+    background: linear-gradient(90deg, #29e0b8 0%, #7bffc9 110%);
+    color: #0a2a20;
+    border-color: #23ff93;
+    font-weight: 600;
+  }
+  .option.incorrect {
+    background: linear-gradient(90deg, #c94276, #ff8f85 96%);
+    color: #fff3;
+    border-color: #ff6b8a;
+    opacity: 0.7;
+  }
+  .option:disabled { cursor: not-allowed; }
 
-    .option.incorrect {
-      background: linear-gradient(90deg,#c94276,#ff8f85 96%);
-      color: #fff4;
-      opacity: .6;
-    }
+  /* ── FEEDBACK ── */
+  #feedback {
+    margin: 10px 0 6px 0;
+    font-size: 1.05em;
+    padding: 10px 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    display: none;
+  }
+  #feedback.right { background: #23ffc4cc; color: #054a38; }
+  #feedback.wrong { background: #ff7b8ecc; color: #3d010a; }
 
-    /* Feedback Messages */
-    #feedback {
-      margin: 10px 0 8px 0;
-      font-size: 1.1em;
-      padding: 10px 16px;
-      color: #fafaff;
-      font-weight: 600;
-      min-height: 20px;
-      letter-spacing: .1em;
-      border-radius: 8px;
-      display: none;
-    }
+  /* ── REASONING ── */
+  #why {
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin: 8px 0;
+    background: rgba(0,255,220,0.08);
+    color: #b8f0e8;
+    border-left: 3px solid #07faf1;
+    display: none;
+    font-size: 0.97em;
+    line-height: 1.55;
+    text-align: left;
+  }
 
-    #feedback.right {
-      background: #23ffc4d5;
-      color: #047454;
-      box-shadow: 0 1px 11px #12ffbb2f;
-    }
+  /* ── NAV BUTTONS ── */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+    gap: 12px;
+  }
+  .nav-btns button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.05em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    max-width: 160px;
+    font-family: 'Exo 2', Arial, sans-serif;
+  }
+  #prevBtn { background: #334; color: #aaa; border: 1.5px solid #445; }
+  #prevBtn:hover:not(:disabled) { background: #445; color: #fff; }
+  #prevBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+  #nextBtn {
+    background: linear-gradient(90deg, #07faf1 0%, #13daff 90%);
+    color: #042;
+    box-shadow: 0 2px 16px #05ffdd22;
+  }
+  #nextBtn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-    #feedback.wrong {
-      background: #ff7b8eec;
-      color: #3d010a;
-    }
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    border: none;
+    border-top: 1px solid #0ff2;
+    margin: 24px 0;
+  }
 
-    /* Explanation */
-    #why {
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin: 12px 0 8px 0;
-      background: #0ff7;
-      color: #253b40;
-      display: none;
-      font-size: 1em;
-      transition: opacity .2s;
-      text-align: left;
-    }
+  /* ── SCORE RESULT ── */
+  #result-section { display: none; }
+  .total-score {
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2em;
+    color: #07faf1;
+    margin: 16px 0 6px 0;
+    text-shadow: 0 0 20px #07faf155;
+  }
+  .score-label {
+    text-align: center;
+    color: #99e5fd;
+    font-size: 1em;
+    margin-bottom: 24px;
+  }
 
-    /* Navigation Buttons */
-    .nav-btns {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 18px;
-      gap: 12px;
-    }
+  /* ── TOPIC BREAKDOWN ── */
+  .topic-breakdown-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1em;
+    color: #07faf1;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .topic-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .topic-name {
+    flex: 0 0 180px;
+    font-size: 0.93em;
+    color: #c8eaff;
+    font-weight: 500;
+  }
+  .topic-bar-wrap {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border-radius: 99px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .topic-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.8s ease;
+  }
+  .topic-score-text {
+    flex: 0 0 48px;
+    text-align: right;
+    font-size: 0.9em;
+    font-weight: 600;
+  }
+  .topic-badge {
+    font-size: 0.75em;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .badge-weak { background: #ff4e6a22; color: #ff8fa3; border: 1px solid #ff4e6a55; }
+  .badge-ok { background: #ffb34722; color: #ffd080; border: 1px solid #ffb34755; }
+  .badge-strong { background: #23ffc422; color: #23ffc4; border: 1px solid #23ffc455; }
 
-    .nav-btns button {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1.1em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: .2s;
-      flex: 1;
-      max-width: 150px;
-    }
+  /* ── SUMMARY TABLE ── */
+  #summaryTable {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 0.88em;
+    margin: 20px 0;
+  }
+  #summaryTable th {
+    background: rgba(0,255,210,0.12);
+    color: #07faf1;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+  }
+  #summaryTable td {
+    padding: 9px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    vertical-align: top;
+  }
+  #summaryTable tr.row-right td { background: rgba(35,255,180,0.05); }
+  #summaryTable tr.row-wrong td { background: rgba(255,80,120,0.06); }
 
-    #prevBtn {
-      background: #888;
-      color: white;
-    }
+  /* ── AI SECTION ── */
+  #ai-section { display: none; }
 
-    #prevBtn:hover:not(:disabled) {
-      background: #666;
-    }
+  .ai-alert-box {
+    background: linear-gradient(135deg, rgba(255,80,100,0.12), rgba(255,150,50,0.08));
+    border: 1.5px solid #ff6b6b55;
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin: 20px 0;
+    text-align: center;
+  }
+  .ai-alert-icon { font-size: 2.2em; margin-bottom: 8px; }
+  .ai-alert-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.05em;
+    color: #ff9f9f;
+    margin-bottom: 8px;
+  }
+  .ai-alert-text {
+    font-size: 0.97em;
+    color: #ffd0d0;
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .ai-weak-topic {
+    display: inline-block;
+    background: rgba(255,80,100,0.2);
+    border: 1px solid #ff6b6b88;
+    border-radius: 8px;
+    padding: 6px 18px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1em;
+    color: #ff9f9f;
+    margin-bottom: 16px;
+  }
+  .btn-ai-yes {
+    background: linear-gradient(90deg, #07faf1, #13daff);
+    color: #042;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 32px;
+    font-size: 1.05em;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 6px 8px;
+    font-family: 'Exo 2', Arial, sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-ai-yes:hover { filter: brightness(1.1); transform: translateY(-2px); }
+  .btn-ai-no {
+    background: transparent;
+    color: #99e5fd;
+    border: 1.5px solid #99e5fd55;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 1em;
+    cursor: pointer;
+    margin: 6px 8px;
+    font-family: 'Exo 2', Arial, sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-ai-no:hover { border-color: #99e5fd; background: rgba(153,229,253,0.08); }
 
-    #prevBtn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+  /* ── AI LOADING ── */
+  #ai-loading { display: none; text-align: center; padding: 30px 0; }
+  .ai-spinner {
+    width: 44px; height: 44px;
+    border: 3px solid #0ff2;
+    border-top-color: #07faf1;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 14px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ai-loading-text { color: #99e5fd; font-size: 1em; }
 
-    #nextBtn {
-      background: linear-gradient(90deg,#07faf1 0%,#13daff 90%);
-      color: #043;
-      box-shadow: 0 2px 16px #05ffdd11;
-    }
+  /* ── AI STUDY MATERIAL ── */
+  #ai-study { display: none; }
+  .ai-study-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .ai-study-icon { font-size: 1.8em; }
+  .ai-study-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1em;
+    color: #07faf1;
+    letter-spacing: 0.5px;
+  }
+  .ai-study-subtitle { font-size: 0.85em; color: #99e5fd; margin-top: 2px; }
+  .ai-content-box {
+    background: rgba(0,255,210,0.05);
+    border: 1px solid #07faf133;
+    border-radius: 14px;
+    padding: 20px 22px;
+    line-height: 1.75;
+    font-size: 0.97em;
+    color: #d0f0ff;
+    white-space: pre-wrap;
+    margin-bottom: 20px;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+  .ai-content-box::-webkit-scrollbar { width: 5px; }
+  .ai-content-box::-webkit-scrollbar-track { background: transparent; }
+  .ai-content-box::-webkit-scrollbar-thumb { background: #07faf155; border-radius: 99px; }
 
-    #nextBtn:hover {
-      filter: brightness(1.1);
-    }
+  .btn-take-followup {
+    display: block;
+    width: 100%;
+    background: linear-gradient(90deg, #07faf1, #13daff);
+    color: #042;
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Exo 2', Arial, sans-serif;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-take-followup:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 6px 20px #07faf133; }
 
-    /* Results */
-    #result {
-      margin-top: 25px;
-      font-size: 1.4em;
-      padding: 8px 0 4px 0;
-      font-weight: bold;
-      color: #23ffbb;
-      text-shadow: 0 2px 11px #04ffd880;
-      display: none;
-    }
+  /* ── AI FOLLOW-UP QUIZ ── */
+  #followup-section { display: none; }
+  .followup-header {
+    background: linear-gradient(135deg, rgba(7,250,241,0.08), rgba(19,218,255,0.05));
+    border: 1px solid #07faf133;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 22px;
+    text-align: center;
+  }
+  .followup-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1em;
+    color: #07faf1;
+    margin-bottom: 4px;
+  }
+  .followup-subtitle { font-size: 0.88em; color: #99e5fd; }
 
-    /* Summary Table */
-    #summaryTable {
-      margin: 25px auto 8px auto;
-      width: 100%;
-      background: #0ff3;
-      border-radius: 10px;
-      border-collapse: collapse;
-      box-shadow: 0 1.5px 8px #00ffd410;
-      font-size: 0.95em;
-    }
+  .followup-q-wrap {
+    margin-bottom: 24px;
+    padding: 18px 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .followup-q-text {
+    font-size: 1.05em;
+    color: #fff;
+    margin-bottom: 14px;
+    font-weight: 500;
+    line-height: 1.55;
+  }
+  .followup-option {
+    display: block;
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid #ffffff18;
+    border-radius: 10px;
+    padding: 11px 14px;
+    margin: 8px 0;
+    color: #d0eaff;
+    font-size: 0.97em;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s;
+    font-family: 'Exo 2', Arial, sans-serif;
+    outline: none;
+  }
+  .followup-option:hover:not(:disabled) {
+    background: rgba(7,250,241,0.08);
+    border-color: #07faf155;
+    transform: translateX(3px);
+  }
+  .followup-option.correct {
+    background: linear-gradient(90deg, #29e0b8 0%, #7bffc9 110%);
+    color: #0a2a20;
+    border-color: #23ff93;
+    font-weight: 600;
+  }
+  .followup-option.incorrect {
+    background: linear-gradient(90deg, #c94276, #ff8f85 96%);
+    color: #fff3;
+    border-color: #ff6b8a;
+    opacity: 0.7;
+  }
+  .followup-option:disabled { cursor: not-allowed; }
+  .followup-reasoning {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: rgba(0,255,220,0.06);
+    border-left: 3px solid #07faf1;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.93em;
+    color: #b8f0e8;
+    display: none;
+    line-height: 1.5;
+  }
 
-    #summaryTable th, #summaryTable td {
-      padding: 10px 8px;
-      text-align: left;
-      border: none;
-    }
+  /* ── FOLLOW-UP RESULT ── */
+  #followup-result { display: none; }
+  .final-card {
+    text-align: center;
+    padding: 28px 20px;
+    background: linear-gradient(135deg, rgba(7,250,241,0.07), rgba(19,218,255,0.04));
+    border: 1.5px solid #07faf133;
+    border-radius: 18px;
+    margin: 20px 0;
+  }
+  .final-emoji { font-size: 3em; margin-bottom: 12px; }
+  .final-score-big {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2em;
+    color: #07faf1;
+    margin-bottom: 6px;
+    text-shadow: 0 0 20px #07faf155;
+  }
+  .final-message { font-size: 1.05em; color: #c8eaff; margin-bottom: 20px; line-height: 1.5; }
 
-    #summaryTable th {
-      background: #11e7abde;
-      color: #08383a;
-      font-weight: 600;
-    }
+  #restartBtn {
+    background: linear-gradient(90deg, #07faf1, #13daff);
+    color: #042;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 40px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Exo 2', Arial, sans-serif;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+  #restartBtn:hover { filter: brightness(1.1); transform: translateY(-2px); }
 
-    #summaryTable tr.right {
-      background: #e9fff3;
-      color: #0a4a0a;
-    }
-
-    #summaryTable tr.wrong {
-      background: #ffe0e7;
-      color: #4a0a0a;
-    }
-
-    /* Restart Button */
-    #restart {
-      margin-top: 25px;
-      padding: 12px 40px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(90deg,#07faf1 0%,#13daff 90%);
-      color: #043;
-      font-size: 1.2em;
-      font-weight: 700;
-      box-shadow: 0 2px 16px #05ffdd11;
-      letter-spacing: .08em;
-      cursor: pointer;
-      display: none;
-      transition: .2s;
-    }
-
-    #restart:hover {
-      filter: brightness(1.1);
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 600px) {
-      #card {
-        padding: 20px 16px;
-        margin: 8px;
-      }
-      
-      h1 {
-        font-size: 1.8em;
-      }
-      
-      #topic {
-        font-size: 1.2em;
-      }
-      
-      #question {
-        font-size: 1.1em;
-      }
-      
-      .option {
-        font-size: 1em;
-        padding: 14px 10px;
-      }
-      
-      .nav-btns button {
-        padding: 10px 16px;
-        font-size: 1em;
-      }
-      
-      #summaryTable {
-        font-size: 0.85em;
-      }
-      
-      #summaryTable th, #summaryTable td {
-        padding: 8px 6px;
-      }
-    }
-  </style>
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    #card { padding: 22px 16px; }
+    h1 { font-size: 1.5em; }
+    .topic-name { flex: 0 0 130px; font-size: 0.85em; }
+    #summaryTable { font-size: 0.78em; }
+  }
+</style>
 </head>
 <body>
-  <div id="card">
-    <h1>Conceptual Learning</h1>
-    <div id="topic">Loading Quiz...</div>
+<div id="card">
+  <h1>Conceptual Learning</h1>
+  <div id="topic-title">Loading Quiz...</div>
+
+  <!-- PROGRESS -->
+  <div id="progress-wrap"><div id="progress-bar"></div></div>
+
+  <!-- QUIZ SECTION -->
+  <div id="quiz-section">
     <div id="question"></div>
     <div id="options"></div>
     <div id="feedback"></div>
     <div id="why"></div>
-    
     <div class="nav-btns">
-      <button id="prevBtn">Previous</button>
-      <button id="nextBtn">Next</button>
+      <button id="prevBtn">◀ Previous</button>
+      <button id="nextBtn">Next ▶</button>
     </div>
-    
-    <div id="result"></div>
-    <div id="summary"></div>
-    <button id="restart">Restart Quiz</button>
   </div>
 
-  <script>
-    // ========== CONFIG ==========
-    const QUESTIONS_PER_SESSION = 20;
-    const QUIZ_TOPIC = "Human Eyes and Colorful World Class-X"; // Change this for each quiz!
+  <!-- RESULT SECTION -->
+  <div id="result-section">
+    <div class="total-score" id="total-score-display"></div>
+    <div class="score-label" id="score-percent-label"></div>
 
-    // ========== GLOBALS ==========
-    let bank = [], quiz = [], idx = 0, score = 0, answerRecord = [];
-    
-    const topicEl = document.getElementById("topic"),
-          qEl = document.getElementById("question"),
-          oEl = document.getElementById("options"),
-          fbEl = document.getElementById("feedback"),
-          wEl = document.getElementById("why"),
-          rEl = document.getElementById("result"),
-          sumEl = document.getElementById("summary"),
-          btnRestart = document.getElementById("restart"),
-          btnPrev = document.getElementById("prevBtn"),
-          btnNext = document.getElementById("nextBtn");
+    <hr class="section-divider">
 
-    // ========== LOAD CSV ==========
-    fetch('quiz.csv')
-      .then(r => r.text())
-      .then(csv => {
-        bank = Papa.parse(csv, {header: true, skipEmptyLines: true}).data
-          .filter(row => row.Question && row.Correct);
-        
-        if (bank.length < QUESTIONS_PER_SESSION) {
-          alert(`Not enough questions in quiz.csv! Found ${bank.length}, need ${QUESTIONS_PER_SESSION}`);
-          return;
-        }
-        
-        topicEl.textContent = QUIZ_TOPIC;
-        startNewSession();
-      })
-      .catch(err => {
-        alert("Cannot load quiz.csv - check filename & sharing settings");
-        console.error(err);
-      });
+    <div class="topic-breakdown-title">📊 Topic-wise Analysis</div>
+    <div id="topic-breakdown"></div>
 
-    // ========== SESSION MANAGEMENT ==========
-    function startNewSession() {
-      quiz = shuffle(bank).slice(0, QUESTIONS_PER_SESSION);
-      idx = 0;
-      score = 0;
-      answerRecord = [];
-      
-      // Hide results
-      rEl.style.display = 'none';
-      sumEl.innerHTML = '';
-      btnRestart.style.display = 'none';
-      
-      // Show quiz elements
-      qEl.style.display = 'block';
-      oEl.style.display = 'block';
-      document.querySelector('.nav-btns').style.display = 'flex';
-      
-      load();
+    <hr class="section-divider">
+    <div style="font-size:0.88em; color:#668; margin-bottom:10px;">Detailed Question Summary</div>
+    <div id="summary"></div>
+  </div>
+
+  <!-- AI SECTION -->
+  <div id="ai-section">
+    <div class="ai-alert-box">
+      <div class="ai-alert-icon">🎯</div>
+      <div class="ai-alert-title">AI Analysis Complete</div>
+      <div class="ai-alert-text">
+        Your weakest topic in this quiz was:
+      </div>
+      <div class="ai-weak-topic" id="weak-topic-name">—</div>
+      <div class="ai-alert-text" id="weak-topic-stats"></div>
+      <div class="ai-alert-text">
+        Would you like to <strong>study this topic now</strong> with AI-generated notes, then take a 5-question follow-up quiz to strengthen it?
+      </div>
+      <div>
+        <button class="btn-ai-yes" onclick="startAIStudy()">✅ Yes, Let's Study!</button>
+        <button class="btn-ai-no" onclick="skipAI()">Skip for now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI LOADING -->
+  <div id="ai-loading">
+    <div class="ai-spinner"></div>
+    <div class="ai-loading-text">🤖 AI is preparing your study material...</div>
+  </div>
+
+  <!-- AI STUDY MATERIAL -->
+  <div id="ai-study">
+    <div class="ai-study-header">
+      <div class="ai-study-icon">📚</div>
+      <div>
+        <div class="ai-study-title" id="study-topic-heading">Topic Study</div>
+        <div class="ai-study-subtitle">AI-generated notes • CBSE Class X</div>
+      </div>
+    </div>
+    <div class="ai-content-box" id="ai-content-display"></div>
+    <button class="btn-take-followup" onclick="startFollowupQuiz()">🧪 Take Follow-up Quiz on This Topic →</button>
+  </div>
+
+  <!-- FOLLOW-UP QUIZ -->
+  <div id="followup-section">
+    <div class="followup-header">
+      <div class="followup-title">🧪 Follow-up Quiz</div>
+      <div class="followup-subtitle" id="followup-topic-label">Topic reinforcement • 5 Questions</div>
+    </div>
+    <div id="followup-loading" style="text-align:center; padding:24px; display:none;">
+      <div class="ai-spinner"></div>
+      <div class="ai-loading-text">🤖 AI is generating quiz questions...</div>
+    </div>
+    <div id="followup-questions"></div>
+    <button id="submitFollowup" style="display:none;" onclick="submitFollowupQuiz()"
+      class="btn-take-followup">Submit Answers →</button>
+  </div>
+
+  <!-- FOLLOW-UP RESULT -->
+  <div id="followup-result">
+    <div class="final-card">
+      <div class="final-emoji" id="final-emoji">🌟</div>
+      <div class="final-score-big" id="final-score-big"></div>
+      <div class="final-message" id="final-message"></div>
+      <button id="restartBtn" onclick="restartQuiz()">🔄 Restart Main Quiz</button>
+    </div>
+  </div>
+
+</div><!-- end #card -->
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG — Put your Anthropic API key below
+// ══════════════════════════════════════════════
+const WORKER_URL = "https://conceptual-quiz-ai.conceptuallearningdelhi.workers.dev";
+const QUESTIONS_PER_SESSION = 20;
+const QUIZ_TOPIC = "Human Eyes and Colorful World — Class X";
+const CSV_URL = "quiz.csv";
+
+// ══════════════════════════════════════════════
+//  GLOBALS
+// ══════════════════════════════════════════════
+let bank = [], quiz = [], idx = 0, score = 0;
+let answerRecord = [];
+let weakTopic = "";
+let aiStudyContent = "";
+let followupQuestions = [];
+let followupAnswered = {};
+
+// DOM refs
+const topicTitle   = document.getElementById("topic-title");
+const qEl          = document.getElementById("question");
+const oEl          = document.getElementById("options");
+const fbEl         = document.getElementById("feedback");
+const wEl          = document.getElementById("why");
+const progressBar  = document.getElementById("progress-bar");
+const prevBtn      = document.getElementById("prevBtn");
+const nextBtn      = document.getElementById("nextBtn");
+
+// ══════════════════════════════════════════════
+//  LOAD CSV
+// ══════════════════════════════════════════════
+fetch(CSV_URL)
+  .then(r => r.text())
+  .then(csv => {
+    bank = Papa.parse(csv, { header: true, skipEmptyLines: true }).data
+      .filter(row => row.Question && row.Correct);
+    topicTitle.textContent = QUIZ_TOPIC;
+    startNewSession();
+  })
+  .catch(err => {
+    alert("Cannot load quiz.csv — check file location.\n" + err);
+  });
+
+// ══════════════════════════════════════════════
+//  SESSION
+// ══════════════════════════════════════════════
+function startNewSession() {
+  quiz = shuffle(bank).slice(0, Math.min(QUESTIONS_PER_SESSION, bank.length));
+  idx = 0; score = 0; answerRecord = [];
+  show("quiz-section");
+  hide("result-section"); hide("ai-section"); hide("ai-loading");
+  hide("ai-study"); hide("followup-section"); hide("followup-result");
+  document.getElementById("progress-wrap").style.display = "block";
+  loadQuestion();
+}
+
+// ══════════════════════════════════════════════
+//  LOAD QUESTION
+// ══════════════════════════════════════════════
+function loadQuestion() {
+  if (idx >= quiz.length) { finishQuiz(); return; }
+  const cur = quiz[idx];
+
+  // Progress
+  progressBar.style.width = ((idx / quiz.length) * 100) + "%";
+
+  // Question text + optional image
+  let qHTML = `<span style="opacity:0.6; font-size:0.88em;">${idx+1} / ${quiz.length}</span><br>${cur.Question}`;
+  if (cur.Image && cur.Image.trim() !== "") {
+    qHTML += `<br><img src="${cur.Image.trim()}" alt="Question diagram">`;
+  }
+  qEl.innerHTML = qHTML;
+
+  // Reset
+  oEl.innerHTML = "";
+  fbEl.style.display = "none";
+  fbEl.textContent = "";
+  wEl.style.display = "none";
+
+  let answered = !!answerRecord[idx];
+  const correctIdx = 'ABCD'.indexOf((cur.Correct || "").trim().toUpperCase());
+
+  ['Option A','Option B','Option C','Option D'].forEach((key, i) => {
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = cur[key];
+    btn.disabled = answered;
+
+    if (answered) {
+      const rec = answerRecord[idx];
+      if (i === correctIdx) btn.classList.add("correct");
+      else if (cur[key] === rec.yourAnswer && !rec.isRight) btn.classList.add("incorrect");
+      // Restore feedback
+      fbEl.textContent = rec.isRight ? "Correct! 🌟" : `Wrong! Correct: ${cur['Option ' + 'ABCD'[correctIdx]]}`;
+      fbEl.className = rec.isRight ? "right" : "wrong";
+      fbEl.style.display = "block";
+      if (cur.Reasoning && cur.Reasoning.trim()) { wEl.textContent = cur.Reasoning; wEl.style.display = "block"; }
     }
 
-    function load() {
-      if (idx >= quiz.length) {
-        finish();
-        return;
-      }
-      
-      const cur = quiz[idx];
-      qEl.textContent = `${idx + 1}/${quiz.length}: ${cur.Question}`;
-      oEl.innerHTML = "";
-      fbEl.style.display = 'none';
-      wEl.style.display = 'none';
-      
-      let answered = answerRecord[idx] ? true : false;
-
-      ['Option A', 'Option B', 'Option C', 'Option D'].forEach((key, i) => {
-        const div = document.createElement("div");
-        div.className = "option";
-        div.textContent = cur[key];
-        
-        div.onclick = () => {
-          if (answered) return; // Question already answered
-          answered = true;
-          
-          const right = 'ABCD'.indexOf(cur.Correct.trim().toUpperCase());
-          const result = (i === right);
-          
-          if (result) {
-            div.classList.add('correct');
-            fbEl.textContent = "Correct! 🌟";
-            fbEl.className = "right";
-            fbEl.style.display = 'block';
-            score++;
-          } else {
-            div.classList.add('incorrect');
-            fbEl.textContent = `Wrong! Correct: ${cur['Option ' + ['A','B','C','D'][right]]}`;
-            fbEl.className = "wrong";
-            fbEl.style.display = 'block';
-            // Highlight the correct answer
-            oEl.children[right].classList.add('correct');
-          }
-          
-          // Show explanation if available
-          if (cur.Reasoning && cur.Reasoning.trim() !== "") {
-            wEl.textContent = cur.Reasoning;
-            wEl.style.display = 'block';
-          }
-          
-          // Record the answer
-          answerRecord[idx] = {
-            num: idx + 1,
-            q: cur.Question,
-            your: cur[key],
-            correct: cur['Option ' + ['A','B','C','D'][right]],
-            isright: result
-          };
-        };
-        
-        oEl.appendChild(div);
-      });
-
-      // Update navigation buttons
-      btnPrev.disabled = (idx === 0);
-      btnNext.textContent = (idx === quiz.length - 1) ? "Finish" : "Next";
-    }
-
-    // ========== NAVIGATION ==========
-    btnPrev.onclick = () => {
-      if (idx > 0) {
-        idx--;
-        load();
-      }
-    };
-
-    btnNext.onclick = () => {
-      if (idx < quiz.length - 1) {
-        idx++;
-        load();
+    btn.onclick = () => {
+      if (answered) return;
+      answered = true;
+      const isRight = (i === correctIdx);
+      if (isRight) {
+        btn.classList.add("correct");
+        fbEl.textContent = "Correct! 🌟";
+        fbEl.className = "right";
+        score++;
       } else {
-        finish();
+        btn.classList.add("incorrect");
+        fbEl.textContent = `Wrong! Correct: ${cur['Option ' + 'ABCD'[correctIdx]]}`;
+        fbEl.className = "wrong";
+        oEl.children[correctIdx].classList.add("correct");
       }
+      fbEl.style.display = "block";
+      if (cur.Reasoning && cur.Reasoning.trim()) { wEl.textContent = cur.Reasoning; wEl.style.display = "block"; }
+      // Disable all
+      Array.from(oEl.children).forEach(b => b.disabled = true);
+      // Record
+      answerRecord[idx] = {
+        num: idx + 1,
+        question: cur.Question,
+        yourAnswer: cur[key],
+        correct: cur['Option ' + 'ABCD'[correctIdx]],
+        isRight,
+        topic: (cur.Topic || "General").trim()
+      };
     };
+    oEl.appendChild(btn);
+  });
 
-    // ========== FINISH QUIZ ==========
-    function finish() {
-      // Hide quiz elements
-      qEl.style.display = 'none';
-      oEl.style.display = 'none';
-      fbEl.style.display = 'none';
-      wEl.style.display = 'none';
-      document.querySelector('.nav-btns').style.display = 'none';
-      
-      // Show results
-      rEl.textContent = `Quiz Complete! Your Score: ${score}/${quiz.length} (${Math.round(score/quiz.length*100)}%)`;
-      rEl.style.display = 'block';
-      
-      // Create summary table
-      let tableHTML = `
-        <table id="summaryTable">
-          <tr>
-            <th>#</th>
-            <th>Question</th>
-            <th>Your Answer</th>
-            <th>Correct Answer</th>
-            <th>Status</th>
-          </tr>
-      `;
-      
-      quiz.forEach((q, i) => {
-        const record = answerRecord[i];
-        if (record) {
-          tableHTML += `
-            <tr class="${record.isright ? 'right' : 'wrong'}">
-              <td>${record.num}</td>
-              <td>${record.q}</td>
-              <td>${record.your}</td>
-              <td>${record.correct}</td>
-              <td>${record.isright ? '<span style="color:#0a6">✔</span>' : '<span style="color:#b00">✗</span>'}</td>
-            </tr>
-          `;
+  prevBtn.disabled = (idx === 0);
+  nextBtn.textContent = (idx === quiz.length - 1) ? "Finish ✓" : "Next ▶";
+}
+
+prevBtn.onclick = () => { if (idx > 0) { idx--; loadQuestion(); } };
+nextBtn.onclick = () => {
+  if (idx < quiz.length - 1) { idx++; loadQuestion(); }
+  else finishQuiz();
+};
+
+// ══════════════════════════════════════════════
+//  FINISH QUIZ
+// ══════════════════════════════════════════════
+function finishQuiz() {
+  hide("quiz-section");
+  document.getElementById("progress-wrap").style.display = "none";
+  progressBar.style.width = "100%";
+
+  // Total score
+  const pct = Math.round((score / quiz.length) * 100);
+  document.getElementById("total-score-display").textContent = `${score} / ${quiz.length}`;
+  document.getElementById("score-percent-label").textContent =
+    `${pct}% — ${pct >= 80 ? "Excellent! 🌟" : pct >= 60 ? "Good effort! 👍" : "Keep practising! 💪"}`;
+
+  // Topic-wise analysis
+  const topicMap = {};
+  quiz.forEach((q, i) => {
+    const t = (q.Topic || "General").trim();
+    if (!topicMap[t]) topicMap[t] = { total: 0, correct: 0 };
+    topicMap[t].total++;
+    if (answerRecord[i] && answerRecord[i].isRight) topicMap[t].correct++;
+  });
+
+  // Find weak topic (only among answered topics)
+  let minPct = 101; weakTopic = "";
+  const topicBreakdownEl = document.getElementById("topic-breakdown");
+  topicBreakdownEl.innerHTML = "";
+
+  Object.entries(topicMap).forEach(([topic, data]) => {
+    const tPct = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+    if (tPct < minPct) { minPct = tPct; weakTopic = topic; }
+
+    const barColor = tPct >= 75 ? "#23ffc4" : tPct >= 50 ? "#ffb347" : "#ff6b8a";
+    const badgeClass = tPct >= 75 ? "badge-strong" : tPct >= 50 ? "badge-ok" : "badge-weak";
+    const badgeText = tPct >= 75 ? "Strong" : tPct >= 50 ? "Okay" : "Weak";
+
+    topicBreakdownEl.innerHTML += `
+      <div class="topic-row">
+        <div class="topic-name">${topic}</div>
+        <div class="topic-bar-wrap">
+          <div class="topic-bar-fill" style="width:${tPct}%; background:${barColor};"></div>
+        </div>
+        <div class="topic-score-text" style="color:${barColor};">${data.correct}/${data.total}</div>
+        <span class="topic-badge ${badgeClass}">${badgeText}</span>
+      </div>`;
+  });
+
+  // Summary table
+  let tableHTML = `<table id="summaryTable">
+    <tr>
+      <th>#</th><th>Question</th><th>Your Answer</th><th>Correct</th><th>Topic</th><th>✓</th>
+    </tr>`;
+  quiz.forEach((q, i) => {
+    const rec = answerRecord[i];
+    const rightIdx = 'ABCD'.indexOf((q.Correct || "").trim().toUpperCase());
+    const correctAns = q['Option ' + 'ABCD'[rightIdx]];
+    if (rec) {
+      tableHTML += `<tr class="${rec.isRight ? 'row-right' : 'row-wrong'}">
+        <td>${i+1}</td><td>${rec.question}</td><td>${rec.yourAnswer}</td>
+        <td>${rec.correct}</td><td style="font-size:0.82em;color:#99e5fd">${rec.topic}</td>
+        <td>${rec.isRight ? '<span style="color:#23ffc4">✔</span>' : '<span style="color:#ff6b8a">✗</span>'}</td>
+      </tr>`;
+    } else {
+      tableHTML += `<tr class="row-wrong">
+        <td>${i+1}</td><td>${q.Question}</td><td style="color:#666">—</td>
+        <td>${correctAns}</td><td style="font-size:0.82em;color:#99e5fd">${(q.Topic||"General").trim()}</td>
+        <td><span style="color:#ff6b8a">✗</span></td>
+      </tr>`;
+    }
+  });
+  tableHTML += "</table>";
+  document.getElementById("summary").innerHTML = tableHTML;
+
+  show("result-section");
+
+  // Show AI section if there's a weak topic
+  if (weakTopic) {
+    const wData = topicMap[weakTopic];
+    const wPct = Math.round((wData.correct / wData.total) * 100);
+    document.getElementById("weak-topic-name").textContent = weakTopic;
+    document.getElementById("weak-topic-stats").textContent =
+      `You scored ${wData.correct} out of ${wData.total} questions (${wPct}%) on this topic.`;
+    show("ai-section");
+  }
+}
+
+// ══════════════════════════════════════════════
+//  AI STUDY MATERIAL
+// ══════════════════════════════════════════════
+async function startAIStudy() {
+  hide("ai-section");
+  show("ai-loading");
+
+  const prompt = `You are an expert CBSE Class X Science teacher. A student struggled with the topic "${weakTopic}" in the chapter "${QUIZ_TOPIC}".
+
+Please create clear, student-friendly study notes for this topic. Structure your response as:
+
+🔑 KEY CONCEPTS
+(3-5 important concepts explained simply)
+
+📌 IMPORTANT POINTS TO REMEMBER
+(bullet points of must-know facts)
+
+💡 COMMON MISTAKES STUDENTS MAKE
+(2-3 typical errors and how to avoid them)
+
+🧠 QUICK MEMORY TIPS
+(simple tricks to remember key facts)
+
+Keep the language simple, direct and suitable for Class 10 students. Use examples wherever helpful.`;
+
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 1200,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    aiStudyContent = data.content[0].text;
+
+    hide("ai-loading");
+    document.getElementById("study-topic-heading").textContent = `📚 ${weakTopic}`;
+    document.getElementById("ai-content-display").textContent = aiStudyContent;
+    show("ai-study");
+
+  } catch (err) {
+    hide("ai-loading");
+    alert("Could not connect to AI. Please check your API key in the code.\n\n" + err.message);
+  }
+}
+
+function skipAI() {
+  hide("ai-section");
+}
+
+// ══════════════════════════════════════════════
+//  FOLLOW-UP QUIZ
+// ══════════════════════════════════════════════
+async function startFollowupQuiz() {
+  hide("ai-study");
+  show("followup-section");
+  document.getElementById("followup-topic-label").textContent =
+    `Topic: ${weakTopic} • 5 Questions`;
+  document.getElementById("followup-loading").style.display = "block";
+  document.getElementById("followup-questions").innerHTML = "";
+  hide("submitFollowup");
+  followupAnswered = {};
+
+  const prompt = `You are a CBSE Class X Science teacher. Create exactly 5 multiple choice questions on the topic "${weakTopic}" from the chapter "${QUIZ_TOPIC}".
+
+Return ONLY valid JSON in this exact format, no extra text:
+{
+  "questions": [
+    {
+      "question": "Question text here?",
+      "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
+      "correct": 0,
+      "reasoning": "Brief explanation why this is correct."
+    }
+  ]
+}
+
+Rules:
+- "correct" is the index (0,1,2,3) of the correct option
+- Questions should test understanding, not just memory
+- Keep language suitable for Class 10 CBSE
+- Cover different aspects of ${weakTopic}`;
+
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 1500,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    let rawText = data.content[0].text.trim();
+    // Strip markdown code fences if present
+    rawText = rawText.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(rawText);
+    followupQuestions = parsed.questions;
+
+    document.getElementById("followup-loading").style.display = "none";
+    renderFollowupQuestions();
+
+  } catch (err) {
+    document.getElementById("followup-loading").style.display = "none";
+    document.getElementById("followup-questions").innerHTML =
+      `<div style="color:#ff9f9f; padding:16px;">Sorry, could not generate questions. Please check your API key.<br><small>${err.message}</small></div>`;
+  }
+}
+
+function renderFollowupQuestions() {
+  const container = document.getElementById("followup-questions");
+  container.innerHTML = "";
+
+  followupQuestions.forEach((q, qi) => {
+    const wrap = document.createElement("div");
+    wrap.className = "followup-q-wrap";
+
+    const qText = document.createElement("div");
+    qText.className = "followup-q-text";
+    qText.textContent = `Q${qi+1}. ${q.question}`;
+    wrap.appendChild(qText);
+
+    q.options.forEach((opt, oi) => {
+      const btn = document.createElement("button");
+      btn.className = "followup-option";
+      btn.textContent = `${['A','B','C','D'][oi]}. ${opt}`;
+      btn.onclick = () => {
+        if (followupAnswered[qi] !== undefined) return;
+        followupAnswered[qi] = oi;
+        Array.from(wrap.querySelectorAll(".followup-option")).forEach(b => b.disabled = true);
+        if (oi === q.correct) {
+          btn.classList.add("correct");
         } else {
-          // Unanswered question
-          const right = 'ABCD'.indexOf(q.Correct.trim().toUpperCase());
-          tableHTML += `
-            <tr class="wrong">
-              <td>${i + 1}</td>
-              <td>${q.Question}</td>
-              <td>Not answered</td>
-              <td>${q['Option ' + ['A','B','C','D'][right]]}</td>
-              <td><span style="color:#b00">✗</span></td>
-            </tr>
-          `;
+          btn.classList.add("incorrect");
+          wrap.querySelectorAll(".followup-option")[q.correct].classList.add("correct");
         }
-      });
-      
-      tableHTML += '</table>';
-      sumEl.innerHTML = tableHTML;
-      
-      btnRestart.style.display = 'inline-block';
-    }
+        const reasonEl = wrap.querySelector(".followup-reasoning");
+        reasonEl.style.display = "block";
+        // Check if all answered
+        if (Object.keys(followupAnswered).length === followupQuestions.length) {
+          document.getElementById("submitFollowup").style.display = "block";
+        }
+      };
+      wrap.appendChild(btn);
+    });
 
-    // ========== RESTART ==========
-    btnRestart.onclick = () => {
-      qEl.style.display = 'block';
-      oEl.style.display = 'block';
-      document.querySelector('.nav-btns').style.display = 'flex';
-      startNewSession();
-    };
+    const reasoning = document.createElement("div");
+    reasoning.className = "followup-reasoning";
+    reasoning.textContent = q.reasoning;
+    wrap.appendChild(reasoning);
 
-    // ========== UTILITY ==========
-    function shuffle(arr) {
-      return arr.map(v => [Math.random(), v])
-                .sort((a, b) => a[0] - b[0])
-                .map(v => v[1]);
-    }
-  </script>
+    container.appendChild(wrap);
+  });
+}
+
+function submitFollowupQuiz() {
+  hide("followup-section");
+  const fScore = Object.values(followupAnswered)
+    .filter((ans, i) => ans === followupQuestions[i].correct).length;
+  const fPct = Math.round((fScore / followupQuestions.length) * 100);
+
+  let emoji = "💪", message = "";
+  if (fPct === 100) {
+    emoji = "🌟";
+    message = `Perfect score! You've completely mastered ${weakTopic}. Excellent work!`;
+  } else if (fPct >= 80) {
+    emoji = "👏";
+    message = `Great improvement! You clearly understand ${weakTopic} now. Keep it up!`;
+  } else if (fPct >= 60) {
+    emoji = "📖";
+    message = `Good effort! Review the study notes once more and you'll be solid on ${weakTopic}.`;
+  } else {
+    emoji = "🔄";
+    message = `Don't worry — ${weakTopic} needs a bit more practice. Re-read the notes and try again!`;
+  }
+
+  document.getElementById("final-emoji").textContent = emoji;
+  document.getElementById("final-score-big").textContent = `${fScore} / ${followupQuestions.length}`;
+  document.getElementById("final-message").textContent = message;
+  show("followup-result");
+}
+
+function restartQuiz() {
+  hide("followup-result");
+  startNewSession();
+}
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function show(id) { document.getElementById(id).style.display = "block"; }
+function hide(id) { document.getElementById(id).style.display = "none"; }
+function shuffle(arr) {
+  return arr.map(v => [Math.random(), v]).sort((a,b) => a[0]-b[0]).map(v => v[1]);
+}
+// Fix submitFollowup reference
+document.getElementById("submitFollowup");
+</script>
 </body>
 </html>
-
