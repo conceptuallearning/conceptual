@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Animal Cell — Class X Biology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#030c18;
+  --surface:#061220;
+  --panel:#050e1c;
+  --border:rgba(0,210,255,0.13);
+  --text:#d6f0ff;
+  --dim:#5a7a90;
+  --accent:#00d4ff;
+}
+html,body{height:100%;overflow:hidden;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Raleway',sans-serif;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  cursor:default;
+}
+
+/* ── HEADER ── */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 24px;
+  border-bottom:1px solid var(--border);
+  background:rgba(3,12,24,0.9);
+  backdrop-filter:blur(10px);
+  position:relative;z-index:10;
+  flex-shrink:0;
+}
+.header-left h1{
+  font-family:'Cinzel',serif;
+  font-size:1.25rem;font-weight:700;letter-spacing:.08em;
+  background:linear-gradient(120deg,#00e5ff 0%,#b39ddb 60%,#f48fb1 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.header-left p{
+  font-size:.65rem;color:var(--dim);letter-spacing:.2em;text-transform:uppercase;margin-top:2px;
+}
+.header-right{
+  font-family:'Fira Code',monospace;font-size:.7rem;color:var(--dim);
+  text-align:right;line-height:1.6;
+}
+.header-right span{color:#00e5ff;}
+
+/* ── LAYOUT ── */
+.container{display:flex;flex:1;overflow:hidden;min-height:0;}
+
+/* ── CELL AREA ── */
+.cell-area{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  background:radial-gradient(ellipse 70% 60% at 50% 52%, #071a2e 0%, #030c18 100%);
+}
+.cell-area::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,180,255,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,180,255,.028) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.cell-area::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 55% 50% at 50% 50%,rgba(0,100,180,.06) 0%,transparent 70%);
+}
+
+#cellSVG{
+  width:100%;height:100%;
+  max-width:740px;max-height:calc(100vh - 160px);
+  position:relative;z-index:2;
+}
+
+/* ── INFO PANEL ── */
+.info-panel{
+  width:330px;flex-shrink:0;
+  background:var(--panel);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.info-inner{
+  flex:1;overflow-y:auto;padding:22px 18px 24px;
+}
+.info-inner::-webkit-scrollbar{width:3px;}
+.info-inner::-webkit-scrollbar-track{background:transparent;}
+.info-inner::-webkit-scrollbar-thumb{background:rgba(0,210,255,.2);border-radius:2px;}
+
+/* empty state */
+.info-empty{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;height:100%;text-align:center;
+  padding:30px;
+}
+.empty-icon{font-size:2.8rem;margin-bottom:16px;opacity:.25;
+  animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.info-empty p{font-size:.82rem;color:var(--dim);line-height:1.7;max-width:200px;}
+.info-empty small{margin-top:14px;font-size:.68rem;color:rgba(90,122,144,.6);
+  font-family:'Fira Code',monospace;letter-spacing:.05em;}
+
+/* organelle info */
+.org-header{margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.org-color-bar{
+  height:3px;border-radius:2px;margin-bottom:12px;
+  background:var(--org-color,#00d4ff);
+  box-shadow:0 0 10px var(--org-color,#00d4ff);
+  animation:barIn .4s ease;
+}
+@keyframes barIn{from{width:0}to{width:100%}}
+.org-name{
+  font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;
+  color:var(--org-color,#00d4ff);
+  text-shadow:0 0 20px color-mix(in srgb,var(--org-color,#00d4ff) 40%,transparent);
+}
+.org-tagline{
+  font-size:.68rem;color:var(--dim);letter-spacing:.18em;
+  text-transform:uppercase;margin-top:4px;font-style:italic;
+}
+
+/* info sections */
+.sec{
+  margin-bottom:13px;border-radius:8px;padding:11px 13px;
+  border:1px solid;animation:secIn .4s ease both;
+}
+@keyframes secIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec:nth-child(1){animation-delay:.05s}
+.sec:nth-child(2){animation-delay:.1s}
+.sec:nth-child(3){animation-delay:.15s}
+.sec:nth-child(4){animation-delay:.2s}
+
+.sec-struct{border-color:rgba(0,210,255,.2);background:rgba(0,210,255,.04);}
+.sec-struct .sec-title{color:#00d4ff;}
+.sec-props{border-color:rgba(179,157,219,.22);background:rgba(179,157,219,.04);}
+.sec-props .sec-title{color:#b39ddb;}
+.sec-func{border-color:rgba(255,213,79,.18);background:rgba(255,213,79,.03);}
+.sec-func .sec-title{color:#ffd54f;}
+.sec-note{border-color:rgba(244,143,177,.2);background:rgba(244,143,177,.04);}
+.sec-note .sec-title{color:#f48fb1;}
+
+.sec-title{
+  font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.22em;
+  text-transform:uppercase;font-weight:600;margin-bottom:7px;
+  display:flex;align-items:center;gap:6px;
+}
+.sec p,.sec li{font-size:.79rem;line-height:1.68;color:#b0c4d0;}
+.sec ul{padding-left:14px;}
+.sec li{margin-bottom:3px;}
+.sec li::marker{color:var(--org-color,#00d4ff);}
+
+/* close btn */
+.close-btn{
+  display:block;margin:0 18px 0 auto;margin-top:14px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--dim);border-radius:6px;padding:5px 14px;
+  font-family:'Fira Code',monospace;font-size:.7rem;cursor:pointer;
+  transition:all .2s;letter-spacing:.05em;
+}
+.close-btn:hover{background:rgba(255,255,255,.08);color:var(--text);}
+
+/* ── LEGEND ── */
+.legend-bar{
+  flex-shrink:0;
+  padding:8px 16px;
+  border-top:1px solid var(--border);
+  background:rgba(3,12,24,.95);
+  display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+}
+.leg{
+  display:flex;align-items:center;gap:5px;
+  font-size:.6rem;color:var(--dim);cursor:pointer;
+  padding:3px 8px;border-radius:20px;
+  border:1px solid transparent;
+  transition:all .2s;text-transform:uppercase;letter-spacing:.07em;
+  white-space:nowrap;
+}
+.leg:hover{border-color:var(--border);color:var(--text);}
+.leg.active{border-color:var(--leg-color);color:var(--text);}
+.leg-dot{width:7px;height:7px;border-radius:50%;}
+
+/* SVG organelle interaction */
+.org-group{cursor:pointer;transition:opacity .35s,filter .35s;}
+.org-group:hover .org-shape{filter:brightness(1.5);}
+
+@keyframes pulse-ring{
+  0%{opacity:.6;}50%{opacity:1;}100%{opacity:.6;}
+}
+.hint-text{animation:pulse-ring 2.5s infinite;pointer-events:none;}
+
+/* Panel slide animation */
+@keyframes panelIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+.panel-animate{animation:panelIn .35s ease;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>🔬 The Animal Cell — Interactive Atlas</h1>
+    <p>Class X Biology · CBSE · Click any organelle to explore</p>
+  </div>
+  <div class="header-right">
+    <div>Chapter: <span>The Fundamental Unit of Life</span></div>
+    <div>Type: <span>Animal Cell (Eukaryotic)</span></div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ═══ CELL SVG ═══ -->
+  <div class="cell-area">
+    <svg id="cellSVG" viewBox="0 0 740 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Gradients -->
+        <radialGradient id="g-cyto" cx="45%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#093554" stop-opacity=".65"/>
+          <stop offset="100%" stop-color="#020d1a" stop-opacity=".9"/>
+        </radialGradient>
+        <radialGradient id="g-nuc" cx="38%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#7b1fa2" stop-opacity=".9"/>
+          <stop offset="100%" stop-color="#36006b" stop-opacity="1"/>
+        </radialGradient>
+        <radialGradient id="g-nucl" cx="35%" cy="32%" r="65%">
+          <stop offset="0%" stop-color="#ff7043"/>
+          <stop offset="100%" stop-color="#8b1a00"/>
+        </radialGradient>
+        <radialGradient id="g-mito" cx="28%" cy="28%" r="72%">
+          <stop offset="0%" stop-color="#ffcc02"/>
+          <stop offset="100%" stop-color="#c84e00"/>
+        </radialGradient>
+        <radialGradient id="g-vacu" cx="38%" cy="33%" r="62%">
+          <stop offset="0%" stop-color="#42a5f5" stop-opacity=".7"/>
+          <stop offset="100%" stop-color="#0d47a1" stop-opacity=".95"/>
+        </radialGradient>
+        <radialGradient id="g-lyso" cx="33%" cy="30%" r="68%">
+          <stop offset="0%" stop-color="#ef5350"/>
+          <stop offset="100%" stop-color="#7f0000"/>
+        </radialGradient>
+        <!-- Glow filters -->
+        <filter id="f-glow-blue" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="4" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="f-glow-purple" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="f-hi" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="10" result="b"/>
+          <feColorMatrix type="saturate" values="1.8" in="b" result="s"/>
+          <feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="f-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="0" stdDeviation="3" flood-opacity=".4"/>
+        </filter>
+      </defs>
+
+      <!-- ── CYTOPLASM (clickable fill) ── -->
+      <g class="org-group" id="org-cytoplasm" data-id="cytoplasm">
+        <ellipse class="org-shape" cx="368" cy="252" rx="308" ry="222"
+          fill="url(#g-cyto)" stroke="none"/>
+      </g>
+
+      <!-- ── CELL MEMBRANE (clickable border ring) ── -->
+      <g class="org-group" id="org-cell_membrane" data-id="cell_membrane">
+        <ellipse class="org-shape" cx="368" cy="252" rx="308" ry="222"
+          fill="none" stroke="#00e5ff" stroke-width="3.5" opacity=".9"
+          filter="url(#f-glow-blue)"/>
+        <ellipse cx="368" cy="252" rx="315" ry="229"
+          fill="none" stroke="#00e5ff" stroke-width="1" opacity=".2" pointer-events="none"/>
+        <!-- Click ring (fat transparent stroke for easier clicking) -->
+        <ellipse cx="368" cy="252" rx="308" ry="222"
+          fill="none" stroke="transparent" stroke-width="14"/>
+      </g>
+
+      <!-- ── SMOOTH ER (left side, smooth curves, no ribosomes) ── -->
+      <g class="org-group" id="org-smooth_er" data-id="smooth_er">
+        <path class="org-shape" d="M 175 195 Q 148 225 172 258 Q 196 291 165 322 Q 138 352 168 383" fill="none" stroke="#66bb6a" stroke-width="4" stroke-linecap="round" opacity=".88"/>
+        <path class="org-shape" d="M 192 198 Q 165 228 189 261 Q 213 294 182 325 Q 155 355 185 386" fill="none" stroke="#66bb6a" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+        <path class="org-shape" d="M 209 202 Q 182 232 206 265 Q 230 297 200 328" fill="none" stroke="#66bb6a" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+        <line x1="175" y1="227" x2="192" y2="228" stroke="#66bb6a" stroke-width="1.5" opacity=".5"/>
+        <line x1="169" y1="260" x2="188" y2="262" stroke="#66bb6a" stroke-width="1.5" opacity=".5"/>
+        <line x1="166" y1="320" x2="183" y2="322" stroke="#66bb6a" stroke-width="1.5" opacity=".5"/>
+        <line x1="170" y1="355" x2="187" y2="357" stroke="#66bb6a" stroke-width="1.5" opacity=".4"/>
+        <!-- invisible fat hit area -->
+        <path d="M 145 195 Q 118 225 142 258 Q 166 291 135 322 Q 108 352 138 383" fill="none" stroke="transparent" stroke-width="18" stroke-linecap="round"/>
+      </g>
+
+      <!-- ── ROUGH ER (right of nucleus, has ribosome dots) ── -->
+      <g class="org-group" id="org-rough_er" data-id="rough_er">
+        <path class="org-shape" d="M 452 218 Q 510 196 532 228 Q 554 260 522 285 Q 490 310 520 340 Q 550 368 526 395" fill="none" stroke="#26c6da" stroke-width="4" stroke-linecap="round" opacity=".88"/>
+        <path class="org-shape" d="M 462 232 Q 520 210 542 242 Q 564 274 532 298 Q 500 322 530 352 Q 558 380 537 405" fill="none" stroke="#26c6da" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+        <!-- Ribosome dots on Rough ER -->
+        <circle cx="455" cy="216" r="4.5" fill="#90a4ae"/>
+        <circle cx="471" cy="208" r="4.5" fill="#b0bec5"/>
+        <circle cx="489" cy="203" r="4.5" fill="#90a4ae"/>
+        <circle cx="507" cy="202" r="4.5" fill="#b0bec5"/>
+        <circle cx="523" cy="208" r="4.5" fill="#90a4ae"/>
+        <circle cx="534" cy="220" r="4.5" fill="#b0bec5"/>
+        <circle cx="541" cy="234" r="4.5" fill="#90a4ae"/>
+        <circle cx="545" cy="249" r="4.5" fill="#b0bec5"/>
+        <circle cx="540" cy="264" r="4.5" fill="#90a4ae"/>
+        <circle cx="529" cy="276" r="4.5" fill="#b0bec5"/>
+        <circle cx="518" cy="285" r="4.5" fill="#90a4ae"/>
+        <circle cx="508" cy="295" r="4.5" fill="#b0bec5"/>
+        <circle cx="467" cy="230" r="4.5" fill="#90a4ae"/>
+        <circle cx="472" cy="242" r="4.5" fill="#b0bec5"/>
+        <circle cx="520" cy="332" r="4.5" fill="#90a4ae"/>
+        <circle cx="530" cy="344" r="4.5" fill="#b0bec5"/>
+        <circle cx="540" cy="358" r="4.5" fill="#90a4ae"/>
+        <circle cx="542" cy="373" r="4.5" fill="#b0bec5"/>
+        <circle cx="536" cy="387" r="4.5" fill="#90a4ae"/>
+        <path d="M 430 218 Q 488 196 510 228 Q 532 260 500 285" fill="none" stroke="transparent" stroke-width="18" stroke-linecap="round"/>
+      </g>
+
+      <!-- ── GOLGI APPARATUS (below-left of nucleus, stacked arcs) ── -->
+      <g class="org-group" id="org-golgi" data-id="golgi" transform="translate(268,358)">
+        <path class="org-shape" d="M -58 -18 Q 0 -40 58 -18" fill="none" stroke="#ffd54f" stroke-width="5.5" stroke-linecap="round" opacity=".95"/>
+        <path class="org-shape" d="M -53 -7 Q 0 -26 53 -7" fill="none" stroke="#ffca28" stroke-width="5.5" stroke-linecap="round" opacity=".88"/>
+        <path class="org-shape" d="M -48 4 Q 0 -13 48 4" fill="none" stroke="#ffc107" stroke-width="5.5" stroke-linecap="round" opacity=".8"/>
+        <path class="org-shape" d="M -43 15 Q 0 0 43 15" fill="none" stroke="#ffb300" stroke-width="5.5" stroke-linecap="round" opacity=".7"/>
+        <path class="org-shape" d="M -38 26 Q 0 13 38 26" fill="none" stroke="#ffa000" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+        <!-- Vesicle buds -->
+        <circle class="org-shape" cx="62" cy="-17" r="7" fill="#ffd54f" opacity=".85"/>
+        <circle class="org-shape" cx="68" cy="-4" r="6" fill="#ffc107" opacity=".8"/>
+        <circle class="org-shape" cx="64" cy="9" r="6" fill="#ffb300" opacity=".75"/>
+        <circle class="org-shape" cx="-62" cy="-17" r="6" fill="#ffd54f" opacity=".8"/>
+        <circle class="org-shape" cx="-67" cy="-2" r="5.5" fill="#ffc107" opacity=".7"/>
+        <!-- Fat transparent hit area -->
+        <path d="M -70 -30 Q 0 -55 70 -30 L 70 35 Q 0 50 -70 35 Z" fill="transparent"/>
+      </g>
+
+      <!-- ── MITOCHONDRIA (4 scattered) ── -->
+      <g class="org-group" id="org-mitochondria" data-id="mitochondria">
+        <!-- Mito 1: top right -->
+        <g transform="translate(592,170) rotate(-22)">
+          <ellipse class="org-shape" cx="0" cy="0" rx="40" ry="19" fill="url(#g-mito)" stroke="#ff9800" stroke-width="1.5" opacity=".92"/>
+          <ellipse cx="0" cy="0" rx="32" ry="12" fill="none" stroke="#ffcc02" stroke-width="1" opacity=".35"/>
+          <line x1="-16" y1="-13" x2="-16" y2="13" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="-6" y1="-15" x2="-6" y2="15" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="4" y1="-15" x2="4" y2="15" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="14" y1="-14" x2="14" y2="14" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+        </g>
+        <!-- Mito 2: top left -->
+        <g transform="translate(190,178) rotate(18)">
+          <ellipse class="org-shape" cx="0" cy="0" rx="35" ry="17" fill="url(#g-mito)" stroke="#ff9800" stroke-width="1.5" opacity=".87"/>
+          <ellipse cx="0" cy="0" rx="27" ry="10" fill="none" stroke="#ffcc02" stroke-width="1" opacity=".35"/>
+          <line x1="-13" y1="-12" x2="-13" y2="12" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="-4" y1="-14" x2="-4" y2="14" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="5" y1="-14" x2="5" y2="14" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="13" y1="-12" x2="13" y2="12" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+        </g>
+        <!-- Mito 3: bottom right -->
+        <g transform="translate(602,372) rotate(-32)">
+          <ellipse class="org-shape" cx="0" cy="0" rx="42" ry="20" fill="url(#g-mito)" stroke="#ff9800" stroke-width="1.5" opacity=".9"/>
+          <ellipse cx="0" cy="0" rx="34" ry="13" fill="none" stroke="#ffcc02" stroke-width="1" opacity=".35"/>
+          <line x1="-17" y1="-14" x2="-17" y2="14" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="-7" y1="-16" x2="-7" y2="16" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="3" y1="-16" x2="3" y2="16" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="13" y1="-15" x2="13" y2="15" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+        </g>
+        <!-- Mito 4: top center -->
+        <g transform="translate(388,118) rotate(5)">
+          <ellipse class="org-shape" cx="0" cy="0" rx="31" ry="14" fill="url(#g-mito)" stroke="#ff9800" stroke-width="1.5" opacity=".82"/>
+          <ellipse cx="0" cy="0" rx="24" ry="8" fill="none" stroke="#ffcc02" stroke-width="1" opacity=".35"/>
+          <line x1="-10" y1="-10" x2="-10" y2="10" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+          <line x1="10" y1="-10" x2="10" y2="10" stroke="#ffcc02" stroke-width="1.5" opacity=".5"/>
+        </g>
+      </g>
+
+      <!-- ── VACUOLE ── -->
+      <g class="org-group" id="org-vacuole" data-id="vacuole">
+        <ellipse class="org-shape" cx="175" cy="342" rx="38" ry="33"
+          fill="url(#g-vacu)" stroke="#42a5f5" stroke-width="2" opacity=".87"/>
+        <ellipse cx="171" cy="338" rx="20" ry="16" fill="none" stroke="#90caf9" stroke-width="1" opacity=".25"/>
+      </g>
+
+      <!-- ── LYSOSOMES (4 scattered) ── -->
+      <g class="org-group" id="org-lysosome" data-id="lysosome">
+        <circle class="org-shape" cx="252" cy="388" r="18" fill="url(#g-lyso)" stroke="#ef5350" stroke-width="1.5" opacity=".9"/>
+        <circle cx="252" cy="388" r="10" fill="none" stroke="#ff8a80" stroke-width="1" opacity=".35"/>
+        <circle class="org-shape" cx="506" cy="415" r="16" fill="url(#g-lyso)" stroke="#ef5350" stroke-width="1.5" opacity=".85"/>
+        <circle cx="506" cy="415" r="9" fill="none" stroke="#ff8a80" stroke-width="1" opacity=".35"/>
+        <circle class="org-shape" cx="492" cy="145" r="15" fill="url(#g-lyso)" stroke="#ef5350" stroke-width="1.5" opacity=".8"/>
+        <circle cx="492" cy="145" r="8" fill="none" stroke="#ff8a80" stroke-width="1" opacity=".35"/>
+        <circle class="org-shape" cx="158" cy="313" r="14" fill="url(#g-lyso)" stroke="#ef5350" stroke-width="1.5" opacity=".78"/>
+        <circle cx="158" cy="313" r="8" fill="none" stroke="#ff8a80" stroke-width="1" opacity=".35"/>
+      </g>
+
+      <!-- ── CENTRIOLE (below-right of nucleus) ── -->
+      <g class="org-group" id="org-centriole" data-id="centriole" transform="translate(416,346)">
+        <!-- Centriole A (barrel 1) -->
+        <rect class="org-shape" x="-26" y="-10" width="22" height="32" rx="5"
+          fill="rgba(244,143,177,.12)" stroke="#f48fb1" stroke-width="2" opacity=".9"/>
+        <line x1="-22" y1="-4" x2="-8" y2="-4" stroke="#f48fb1" stroke-width="1.2" opacity=".55"/>
+        <line x1="-22" y1="3" x2="-8" y2="3" stroke="#f48fb1" stroke-width="1.2" opacity=".55"/>
+        <line x1="-22" y1="10" x2="-8" y2="10" stroke="#f48fb1" stroke-width="1.2" opacity=".55"/>
+        <line x1="-22" y1="17" x2="-8" y2="17" stroke="#f48fb1" stroke-width="1.2" opacity=".55"/>
+        <!-- Centriole B (perpendicular) -->
+        <rect class="org-shape" x="2" y="-3" width="33" height="20" rx="5"
+          fill="rgba(244,143,177,.12)" stroke="#f48fb1" stroke-width="2" opacity=".9"/>
+        <line x1="8" y1="-3" x2="8" y2="17" stroke="#f48fb1" stroke-width="1.2" opacity=".55"/>
+        <line x1="15" y1="-3" x2="15" y2="17" stroke="#f48fb1" stroke-width="1.2" opacity=".55"/>
+        <line x1="22" y1="-3" x2="22" y2="17" stroke="#f48fb1" stroke-width="1.2" opacity=".55"/>
+        <line x1="29" y1="-3" x2="29" y2="17" stroke="#f48fb1" stroke-width="1.2" opacity=".55"/>
+        <!-- Hit area -->
+        <rect x="-30" y="-16" width="70" height="44" fill="transparent"/>
+      </g>
+
+      <!-- ── FREE RIBOSOMES (scattered tiny dots) ── -->
+      <g class="org-group" id="org-ribosome" data-id="ribosome">
+        <circle class="org-shape" cx="290" cy="158" r="4.5" fill="#90a4ae"/>
+        <circle cx="302" cy="150" r="4" fill="#b0bec5"/>
+        <circle cx="350" cy="145" r="4.5" fill="#90a4ae"/>
+        <circle cx="430" cy="155" r="4" fill="#b0bec5"/>
+        <circle cx="445" cy="163" r="4.5" fill="#90a4ae"/>
+        <circle cx="172" cy="238" r="4" fill="#b0bec5"/>
+        <circle cx="186" cy="252" r="4.5" fill="#90a4ae"/>
+        <circle cx="163" cy="372" r="4" fill="#b0bec5"/>
+        <circle cx="305" cy="425" r="4.5" fill="#90a4ae"/>
+        <circle cx="345" cy="428" r="4" fill="#b0bec5"/>
+        <circle cx="400" cy="432" r="4.5" fill="#90a4ae"/>
+        <circle cx="624" cy="262" r="4" fill="#b0bec5"/>
+        <circle cx="636" cy="248" r="4.5" fill="#90a4ae"/>
+        <circle cx="614" cy="304" r="4" fill="#b0bec5"/>
+        <circle cx="628" cy="315" r="4.5" fill="#90a4ae"/>
+        <circle cx="562" cy="425" r="4" fill="#b0bec5"/>
+        <circle cx="576" cy="435" r="4.5" fill="#90a4ae"/>
+        <circle cx="252" cy="148" r="4" fill="#b0bec5"/>
+        <circle cx="268" cy="160" r="4.5" fill="#90a4ae"/>
+        <circle cx="568" cy="148" r="4" fill="#b0bec5"/>
+        <circle cx="582" cy="157" r="4.5" fill="#90a4ae"/>
+        <circle cx="480" cy="430" r="4" fill="#b0bec5"/>
+        <circle cx="217" cy="427" r="4.5" fill="#90a4ae"/>
+        <!-- Wider hit area -->
+        <rect x="60" y="130" width="620" height="320" fill="transparent" pointer-events="none"/>
+      </g>
+
+      <!-- ── NUCLEUS (drawn near-last so it's on top) ── -->
+      <!-- Nuclear envelope outer ring (dashed) -->
+      <ellipse cx="360" cy="252" rx="89" ry="73"
+        fill="none" stroke="#ce93d8" stroke-width="1" stroke-dasharray="4,3" opacity=".25" pointer-events="none"/>
+      <!-- Nucleus fill + border -->
+      <g class="org-group" id="org-nucleus" data-id="nucleus">
+        <ellipse class="org-shape" cx="360" cy="252" rx="85" ry="70"
+          fill="url(#g-nuc)" stroke="#ce93d8" stroke-width="2.5"
+          filter="url(#f-glow-purple)" opacity=".97"/>
+        <!-- Chromatin texture -->
+        <ellipse cx="344" cy="242" rx="32" ry="14" fill="none" stroke="#b39ddb" stroke-width="1" opacity=".22" transform="rotate(-22 344 242)"/>
+        <ellipse cx="378" cy="268" rx="26" ry="11" fill="none" stroke="#b39ddb" stroke-width="1" opacity=".18" transform="rotate(28 378 268)"/>
+        <!-- Nuclear pores -->
+        <circle cx="360" cy="182" r="4.5" fill="#9c27b0" stroke="#e040fb" stroke-width="1.8" opacity=".9"/>
+        <circle cx="444" cy="232" r="4.5" fill="#9c27b0" stroke="#e040fb" stroke-width="1.8" opacity=".9"/>
+        <circle cx="441" cy="276" r="4.5" fill="#9c27b0" stroke="#e040fb" stroke-width="1.8" opacity=".9"/>
+        <circle cx="360" cy="322" r="4.5" fill="#9c27b0" stroke="#e040fb" stroke-width="1.8" opacity=".9"/>
+        <circle cx="278" cy="276" r="4.5" fill="#9c27b0" stroke="#e040fb" stroke-width="1.8" opacity=".9"/>
+        <circle cx="280" cy="230" r="4.5" fill="#9c27b0" stroke="#e040fb" stroke-width="1.8" opacity=".9"/>
+        <circle cx="400" cy="183" r="3.8" fill="#9c27b0" stroke="#e040fb" stroke-width="1.5" opacity=".8"/>
+        <circle cx="320" cy="184" r="3.8" fill="#9c27b0" stroke="#e040fb" stroke-width="1.5" opacity=".8"/>
+      </g>
+
+      <!-- ── NUCLEOLUS (topmost, inside nucleus) ── -->
+      <g class="org-group" id="org-nucleolus" data-id="nucleolus">
+        <circle class="org-shape" cx="364" cy="247" r="24"
+          fill="url(#g-nucl)" stroke="#ff5722" stroke-width="1.8" opacity=".97"/>
+        <circle cx="360" cy="243" r="10" fill="none" stroke="#ff8a65" stroke-width="1" opacity=".3"/>
+      </g>
+
+      <!-- ── LABELS (non-interactive) ── -->
+      <g pointer-events="none" font-family="Raleway,sans-serif" font-weight="500">
+        <text x="364" y="251" text-anchor="middle" dominant-baseline="middle" font-size="8.5" fill="rgba(255,220,200,.75)">Nucleolus</text>
+        <text x="360" y="335" text-anchor="middle" font-size="9.5" fill="rgba(206,147,216,.65)">Nucleus</text>
+        <text x="193" y="290" text-anchor="middle" font-size="9" fill="rgba(102,187,106,.7)">Smooth ER</text>
+        <text x="525" y="268" text-anchor="middle" font-size="9" fill="rgba(38,198,218,.7)">Rough ER</text>
+        <text x="268" y="318" text-anchor="middle" font-size="9" fill="rgba(255,213,79,.7)">Golgi</text>
+        <text x="594" y="152" text-anchor="middle" font-size="9" fill="rgba(255,180,0,.7)">Mitochondria</text>
+        <text x="253" y="374" text-anchor="middle" font-size="8.5" fill="rgba(239,83,80,.7)">Lysosome</text>
+        <text x="175" y="316" text-anchor="middle" font-size="9" fill="rgba(66,165,245,.7)">Vacuole</text>
+        <text x="416" y="334" text-anchor="middle" font-size="9" fill="rgba(244,143,177,.7)">Centriole</text>
+        <text x="364" y="143" text-anchor="middle" font-size="9" fill="rgba(176,190,197,.6)" class="hint-text">↓ click organelles</text>
+        <text x="620" y="230" text-anchor="middle" font-size="8.5" fill="rgba(176,190,197,.55)">Ribosomes</text>
+        <text x="178" y="415" text-anchor="middle" font-size="8.5" fill="rgba(0,229,255,.45)">Cell Membrane →</text>
+      </g>
+    </svg>
+
+    <!-- Legend -->
+    <div class="legend-bar" id="legend"></div>
+  </div>
+
+  <!-- ═══ INFO PANEL ═══ -->
+  <div class="info-panel">
+    <div class="info-inner" id="infoInner">
+      <div class="info-empty">
+        <div class="empty-icon">🧬</div>
+        <p>Click on any organelle in the cell to view its detailed structure, properties &amp; functions.</p>
+        <small>// Class X · CBSE Science Chapter 5</small>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DATA = {
+  cytoplasm:{
+    name:"Cytoplasm",color:"#4fc3f7",tagline:"The Cell's Inner Ocean",
+    structure:"Semi-fluid, jelly-like substance that fills the cell. Composed of ~90% water with dissolved salts, organic molecules, and suspended organelles. The non-living granular inclusions are called ergastic substances.",
+    props:"Viscous colloid with slightly alkaline pH (~7.2). Exhibits cyclosis (cytoplasmic streaming). Provides mechanical support and elasticity to the cell.",
+    funcs:["Medium for all metabolic reactions","Site of anaerobic respiration (Glycolysis)","Provides turgidity and shape to the cell","Stores raw materials, products and waste","Facilitates intracellular transport of materials"],
+    note:"Cytoplasm + Nucleus = Protoplasm (the 'living matter' of the cell). Term coined by Kölliker (1862). Contains both the organelles and cytosol."
+  },
+  cell_membrane:{
+    name:"Cell Membrane",color:"#00e5ff",tagline:"Fluid Mosaic — The Selective Gateway",
+    structure:"Fluid Mosaic Model (Singer & Nicolson, 1972): Phospholipid bilayer (hydrophilic heads outward, hydrophobic tails inward) with embedded integral and peripheral proteins. Carbohydrate chains on outer surface form glycocalyx. Thickness: 7–10 nm.",
+    props:"Selectively permeable (semi-permeable), flexible, and dynamic. Peripheral proteins give structural support; integral proteins form channels and carriers. Also called Plasma Membrane.",
+    funcs:["Controls entry and exit — selective permeability","Maintains cell shape and mechanical protection","Site of active transport using ATP energy","Passive transport via diffusion and osmosis","Cell-to-cell communication and recognition via surface receptors"],
+    note:"Present in BOTH plant and animal cells. Plant cells have an additional Cell Wall outside this. Plasma Membrane was first defined by Nageli & Cramer (1855). Fluid because phospholipids can move laterally."
+  },
+  nucleus:{
+    name:"Nucleus",color:"#ce93d8",tagline:"The Command Centre of Life",
+    structure:"Largest organelle. Enclosed by a double-membrane nuclear envelope with nuclear pores (~3,000–4,000 per nucleus). Contains chromatin (DNA + histone proteins). Nucleolus present inside. Surrounded by nucleoplasm.",
+    props:"Spherical; 5–25 μm diameter. Nuclear pores allow selective exchange with cytoplasm. Most cells are mononucleate; mature RBCs have no nucleus; muscle fibres and osteoclasts are multinucleate.",
+    funcs:["Controls all metabolic activities — 'Brain of the Cell'","Contains and protects genetic information (DNA)","Site of DNA replication and RNA transcription","Directs protein synthesis by producing mRNA","Responsible for heredity and transmission of genetic traits"],
+    note:"Discovered by Robert Brown (1831). Prokaryotes have NO membrane-bound nucleus (only nucleoid). Nuclear envelope disappears during prophase of cell division and reforms in telophase. KEY EXAM FACT!"
+  },
+  nucleolus:{
+    name:"Nucleolus",color:"#ff7043",tagline:"The Ribosome Factory",
+    structure:"Dense, spherical, non-membrane-bound body within the nucleus. Composed of rRNA and proteins. 1–4 per nucleus. Strongly basophilic. Located at the nucleolar organising region (NOR) of specific chromosomes.",
+    props:"Disappears during prophase of cell division; reappears in telophase. Larger and more prominent in metabolically active cells (e.g., nerve cells, secretory cells). Not surrounded by any membrane.",
+    funcs:["Synthesis of ribosomal RNA (rRNA)","Assembly of large and small ribosomal subunits","Indirectly critical for all protein synthesis","More active in cells with higher metabolic rates","Contains DNA loops for rRNA gene transcription"],
+    note:"First observed by Fontana (1781). Also called nucleoloid. Larger nucleolus = more active cell protein synthesis. It is NOT membrane-bound — important distinction for exams!"
+  },
+  mitochondria:{
+    name:"Mitochondria",color:"#ffb300",tagline:"Powerhouse of the Cell",
+    structure:"Double membrane-bound. Outer membrane: smooth, permeable to small molecules. Inner membrane: folded into CRISTAE (increases surface area). Matrix contains enzymes, mitochondrial DNA (circular), and 70S ribosomes. F₀-F₁ particles (ATP synthase) on cristae.",
+    props:"Rod-shaped or oval; 0.5–10 μm. Semi-autonomous organelle: has own DNA and ribosomes, can self-replicate by binary fission. Muscle cells have thousands; mature RBCs have none.",
+    funcs:["Aerobic cellular respiration: Krebs Cycle in matrix, ETC on cristae","Produces ATP — the energy currency of the cell","Synthesis of certain lipids and amino acids","Regulates calcium ion homeostasis","Plays key role in apoptosis (programmed cell death)"],
+    note:"Cristae house ATP synthase (F₀-F₁ particles). Mitochondria have 70S ribosomes like bacteria — supports Endosymbiotic Theory. Discovered by Altmann (1890). Named by Benda (1898). Own DNA = maternal inheritance!"
+  },
+  rough_er:{
+    name:"Rough ER",color:"#80cbc4",tagline:"The Protein Assembly Line",
+    structure:"Network of interconnected, flattened membrane sacs (cisternae) STUDDED WITH RIBOSOMES on outer surface. Continuous with the nuclear envelope. The ribosomes are 80S type. Lumen transports newly made proteins.",
+    props:"Appears rough due to attached ribosomes. Most abundant in cells secreting proteins: pancreatic acinar cells, plasma B-cells, liver cells. Closely connected to Golgi apparatus for protein shipping.",
+    funcs:["Synthesis of secretory proteins and membrane proteins","Protein folding, modification and quality control","Transports proteins to Golgi apparatus in vesicles","Produces glycoproteins (proteins with sugar chains)","Membrane biogenesis — creates new membrane material"],
+    note:"Cells that make huge amounts of proteins (like plasma cells making antibodies) are packed with RER. The ribosomes literally make it look 'rough' under electron microscope. Misfolded proteins are destroyed here (ER quality control)."
+  },
+  smooth_er:{
+    name:"Smooth ER",color:"#a5d6a7",tagline:"The Lipid Synthesizer & Detoxifier",
+    structure:"Network of tubular membranes WITHOUT ribosomes on surface. More tubular than RER. Connects RER to Golgi apparatus. In muscle cells, specialised as Sarcoplasmic Reticulum (SR).",
+    props:"Smooth surface (no ribosomes). Prominent in liver cells (detoxification), adrenal cortex (steroid hormones), and muscle fibres (Ca²⁺ storage as Sarcoplasmic Reticulum).",
+    funcs:["Synthesis of lipids, phospholipids, and fatty acids","Synthesis of steroid hormones (testosterone, oestrogen, cortisol)","Detoxification of drugs, alcohol, and metabolic waste (liver)","Stores and releases calcium ions (muscle contraction)","Metabolism of carbohydrates — glucose-6-phosphatase activity"],
+    note:"In muscle cells, SER = Sarcoplasmic Reticulum. Ca²⁺ release from SR triggers muscle contraction. Liver cells are rich in SER for alcohol and drug breakdown. Chronic alcohol use enlarges liver SER as a tolerance response!"
+  },
+  golgi:{
+    name:"Golgi Apparatus",color:"#ffd54f",tagline:"The Post Office & Traffic Police",
+    structure:"Stack of flattened, membrane-bound cisternae (4–8 per stack). Has clear polarity: cis face (convex — receives from RER) and trans face (concave — dispatches vesicles). Small vesicles bud off from edges of cisternae.",
+    props:"Located near nucleus and RER. Also called Golgi body, Golgi complex, or Dictyosome (in plants). Vesicles carry cargo to plasma membrane, lysosomes, or are secreted.",
+    funcs:["Processing, modifying and packaging of proteins (post-translational)","Glycosylation: adds sugar chains to proteins → glycoproteins","Sorts and directs proteins to correct destinations","Produces secretory vesicles for exocytosis","Synthesises lysosomes by packaging hydrolytic enzymes"],
+    note:"Discovered by Camillo Golgi (1898) using silver staining (Black Reaction). Called 'Traffic Police' or 'Post Office' of cell. cis = receiving dock; trans = shipping dock. Vesicle transport is directional!"
+  },
+  lysosome:{
+    name:"Lysosome",color:"#ef9a9a",tagline:"Suicide Bags of the Cell",
+    structure:"Small, spherical, single-membrane-bound vesicles (0.2–0.8 μm diameter). Formed by budding from trans-Golgi. Interior is acidic (pH ≈ 4.5–5). Contains 40+ types of hydrolytic enzymes: proteases, lipases, nucleases, glycosidases.",
+    props:"Found mainly in animal cells. Membrane is highly resistant to its own enzymes. Rich in acid hydrolases. Act as the cell's intracellular digestive system.",
+    funcs:["Intracellular digestion of food via phagocytosis (phagosome + lysosome = phagolysosome)","Autophagy: digests and recycles worn-out organelles","Destroy foreign bacteria, viruses, and pathogens","Autolysis: bursts → entire cell digested (programmed cell death)","Bone remodelling and embryonic tail resorption (metamorphosis)"],
+    note:"Called 'Suicide Bags' — term by Christian de Duve (discoverer, 1955). If lysosome bursts, the cell digests itself. Critical for immunity (macrophages use them). KEY EXAM: Lysosomes are more common in animal cells!"
+  },
+  ribosome:{
+    name:"Ribosome",color:"#b0bec5",tagline:"The Protein Synthesis Machine",
+    structure:"Two subunits: Large (60S) + Small (40S) = 80S in eukaryotes. Composed of rRNA and proteins. NOT membrane-bound. Diameter: 20–30 nm. Multiple ribosomes on one mRNA = Polyribosome (Polysome).",
+    props:"Smallest cell organelle. Found free in cytoplasm OR attached to RER. Prokaryotes: 70S (50S + 30S). Eukaryotes: 80S (60S + 40S). 'S' = Svedberg unit (sedimentation coefficient). Mitochondria & chloroplasts have 70S ribosomes.",
+    funcs:["Site of protein synthesis — translation of mRNA to polypeptide","Reads mRNA codons (3 nucleotides at a time) using tRNA","Links amino acids via peptide bonds using peptidyl transferase activity","Free ribosomes → proteins for intracellular use","Bound ribosomes (on RER) → secretory and membrane proteins"],
+    note:"Only organelle in BOTH prokaryotes and eukaryotes. NO membrane surrounds ribosomes. Prokaryote: 70S; Eukaryote: 80S. Antibiotics like streptomycin target bacterial 70S ribosomes (do NOT affect eukaryote 80S). KEY for boards!"
+  },
+  vacuole:{
+    name:"Vacuole",color:"#90caf9",tagline:"The Storage Chamber",
+    structure:"Membrane-bound sac filled with cell sap (aqueous solution of minerals, sugars, amino acids, pigments). Membrane called TONOPLAST. Animal cells: small and temporary. Plant cells: one large central vacuole occupying up to 90% of cell volume.",
+    props:"Tonoplast regulates what enters or leaves vacuole. In plants: maintains turgor pressure essential for shape. Amoeba: contractile vacuole for water regulation (osmoregulation).",
+    funcs:["Stores water, nutrients, minerals, and metabolic waste","Maintains osmotic pressure and turgidity in plant cells","Stores pigments: anthocyanins (blue, purple, red in flowers)","Contractile vacuoles (Amoeba, Paramecium) expel excess water","Food vacuoles in Protists digest engulfed food particles"],
+    note:"Plant cell: ONE LARGE central vacuole. Animal cell: MANY SMALL, temporary vacuoles. Amoeba: contractile vacuole. Tonoplast = vacuole membrane. Loss of water from vacuole → plasmolysis in plant cells. KEY EXAM FACT!"
+  },
+  centriole:{
+    name:"Centriole",color:"#f48fb1",tagline:"The Cell Division Orchestrator",
+    structure:"Cylindrical structure made of 9 TRIPLET microtubules arranged in a ring (9+0 arrangement — NO central pair). Made of tubulin protein. Two centrioles arranged perpendicularly = CENTROSOME. Located just outside the nucleus.",
+    props:"ABSENT in plant cells and higher fungi. Present only in animal cells and lower plants (algae, liverworts). Length: ~0.3–0.5 μm. Each triplet set = one A-tubule (complete) + B and C tubules (incomplete).",
+    funcs:["Organises and forms spindle fibres during mitosis and meiosis","Ensures equal distribution of chromosomes to daughter cells","Forms basal bodies of cilia and flagella","Determines the plane of cell division","Organises the aster (star-shaped microtubule array) during division"],
+    note:"MOST IMPORTANT EXAM FACT: Centrioles are ABSENT in plant cells and higher fungi — present ONLY in animal cells. 9+0 microtubule arrangement (NO central pair — unlike cilia which are 9+2). Two centrioles = Centrosome."
+  }
+};
+
+const LEGEND_CONFIG=[
+  {id:'cell_membrane',label:'Cell Membrane',color:'#00e5ff'},
+  {id:'nucleus',label:'Nucleus',color:'#ce93d8'},
+  {id:'nucleolus',label:'Nucleolus',color:'#ff7043'},
+  {id:'mitochondria',label:'Mitochondria',color:'#ffb300'},
+  {id:'rough_er',label:'Rough ER',color:'#80cbc4'},
+  {id:'smooth_er',label:'Smooth ER',color:'#a5d6a7'},
+  {id:'golgi',label:'Golgi',color:'#ffd54f'},
+  {id:'lysosome',label:'Lysosome',color:'#ef9a9a'},
+  {id:'ribosome',label:'Ribosome',color:'#b0bec5'},
+  {id:'vacuole',label:'Vacuole',color:'#90caf9'},
+  {id:'centriole',label:'Centriole',color:'#f48fb1'},
+  {id:'cytoplasm',label:'Cytoplasm',color:'#4fc3f7'},
+];
+
+// Build legend
+const legBar=document.getElementById('legend');
+LEGEND_CONFIG.forEach(item=>{
+  const d=document.createElement('div');
+  d.className='leg';d.dataset.id=item.id;
+  d.style.setProperty('--leg-color',item.color);
+  d.innerHTML=`<div class="leg-dot" style="background:${item.color};box-shadow:0 0 5px ${item.color}60;"></div>${item.label}`;
+  d.addEventListener('click',()=>select(item.id));
+  legBar.appendChild(d);
+});
+
+let selected=null;
+
+function allGroups(){return document.querySelectorAll('.org-group');}
+
+function select(id){
+  if(selected===id){deselect();return;}
+  selected=id;
+  const d=DATA[id];if(!d)return;
+
+  allGroups().forEach(el=>{
+    if(el.dataset.id===id){
+      el.style.opacity='1';
+      el.style.filter=`brightness(1.7) drop-shadow(0 0 14px ${d.color}) drop-shadow(0 0 28px ${d.color}55)`;
+    } else {
+      el.style.opacity='0.13';
+      el.style.filter='saturate(0.15) brightness(0.6)';
+    }
+  });
+
+  document.querySelectorAll('.leg').forEach(l=>{
+    l.classList.toggle('active', l.dataset.id===id);
+  });
+
+  renderPanel(d);
+}
+
+function deselect(){
+  selected=null;
+  allGroups().forEach(el=>{el.style.opacity='1';el.style.filter='';});
+  document.querySelectorAll('.leg').forEach(l=>l.classList.remove('active'));
+  renderEmpty();
+}
+
+function renderEmpty(){
+  document.getElementById('infoInner').innerHTML=`
+    <div class="info-empty">
+      <div class="empty-icon">🧬</div>
+      <p>Click on any organelle in the cell to view its detailed structure, properties &amp; functions.</p>
+      <small>// Class X · CBSE Science Chapter 5</small>
+    </div>`;
+}
+
+function renderPanel(d){
+  document.getElementById('infoInner').style.setProperty('--org-color',d.color);
+  document.getElementById('infoInner').innerHTML=`
+    <div class="panel-animate">
+      <button class="close-btn" id="closeBtn">✕ deselect</button>
+      <div class="org-header" style="--org-color:${d.color}">
+        <div class="org-color-bar" style="background:${d.color};box-shadow:0 0 12px ${d.color}80;"></div>
+        <div class="org-name" style="color:${d.color};text-shadow:0 0 18px ${d.color}55;">${d.name}</div>
+        <div class="org-tagline">${d.tagline}</div>
+      </div>
+
+      <div class="sec sec-struct">
+        <div class="sec-title">🏗&nbsp; Structure</div>
+        <p>${d.structure}</p>
+      </div>
+      <div class="sec sec-props">
+        <div class="sec-title">⚗&nbsp; Properties</div>
+        <p>${d.props}</p>
+      </div>
+      <div class="sec sec-func">
+        <div class="sec-title">⚡&nbsp; Functions</div>
+        <ul>${d.funcs.map(f=>`<li>${f}</li>`).join('')}</ul>
+      </div>
+      <div class="sec sec-note">
+        <div class="sec-title">📌&nbsp; Class X Key Point</div>
+        <p>${d.note}</p>
+      </div>
+    </div>`;
+  document.getElementById('closeBtn').addEventListener('click',deselect);
+}
+
+// Wire up SVG clicks
+document.querySelectorAll('.org-group').forEach(el=>{
+  el.addEventListener('click',()=>select(el.dataset.id));
+});
+</script>
+</body>
+</html>
